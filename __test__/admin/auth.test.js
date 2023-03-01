@@ -30,40 +30,44 @@ beforeAll(async function (){
 
     const user = dbInstance.collection('users');
     insertedUser = await user.insertOne({
-      username: 'Clifton.Hane',
-      password: '0Tn3yjFDG8lTPDR',
-      email: 'Dena.Lind@gmail.com',
-      name: 'Paula Lubowitz',
-      shippingAddress: [
+      username: 'Jaren_Schimmel13',
+      password: 'QcegWKVa0liMhVC',
+      email: 'Marietta_Donnelly@gmail.com',
+      name: 'Tracy Osinski',
+      TestResult: [
         {
           _id: false,
-          pincode: 'International',
-          address1: 'Consultant',
-          address2: 'Group',
-          landmark: 'Cambridgeshire',
-          city: 'indexing',
-          isDefault: true,
-          state: 'calculating',
-          addressType: 'proactive',
-          fullName: 'feed',
-          mobile: 633,
-          addressNo: 478
+          pincode: 'HTTP',
+          address1: 'Associate',
+          address2: 'Investor',
+          landmark: 'Curve',
+          city: 'deposit',
+          isDefault: false,
+          state: 'Specialist',
+          addressType: 'pricing',
+          fullName: 'Krona',
+          mobile: 600,
+          addressNo: 677
         }
       ],
-      wishlist: [ {
-        _id: false,
-        productId: 'Customer' 
-      } ],
-      userType: 325,
-      mobileNo: '(974) 836-0254',
-      resetPasswordLink: {},
-      loginRetryLimit: 371,
-      loginReactiveTime: '2023-12-30T21:40:09.272Z',
-      ssoAuth: {
-        googleId: 'Account',
-        facebookId: 'pink' 
+      ScoreStatistics: {
+        TotalListeningScore: 'morph',
+        TotalReadingScore: 'Direct',
+        TestCount: 542
       },
-      id: '63c65dd6d96161954f3f19dc'
+      userType: 641,
+      gender: 'Cis Male',
+      phone: '(277) 899-3342',
+      intro: 'USB',
+      mobileNo: '(666) 140-2380',
+      resetPasswordLink: {},
+      loginRetryLimit: 758,
+      loginReactiveTime: '2023-11-11T02:56:59.070Z',
+      ssoAuth: {
+        googleId: 'Proactive',
+        facebookId: 'Bike' 
+      },
+      id: '63ff5ae36319a6dec92b8bac'
     });
   }
   catch (error) {
@@ -81,33 +85,37 @@ describe('POST /register -> if email and username is given', () => {
     let registeredUser = await request(app)
       .post('/admin/auth/register')
       .send({
-        'username':'Brook_Schinner',
-        'password':'AVgrShfoB7UuvtS',
-        'email':'Enid.Kris14@gmail.com',
-        'name':'Edmond Waelchi',
-        'shippingAddress':[{
+        'username':'Maureen_Price20',
+        'password':'XlN0nmaYdQNlgi3',
+        'email':'Emerald.Rice66@gmail.com',
+        'name':'Mrs. Hubert Cronin',
+        'TestResult':[{
           '_id':false,
-          'pincode':'Metal',
-          'address1':'Movies',
-          'address2':'plum',
-          'landmark':'hacking',
-          'city':'Small',
-          'isDefault':false,
-          'state':'deposit',
-          'addressType':'Berkshire',
-          'fullName':'haptic',
-          'mobile':849,
-          'addressNo':477
+          'pincode':'aggregate',
+          'address1':'Refined',
+          'address2':'Future',
+          'landmark':'firewall',
+          'city':'Home',
+          'isDefault':true,
+          'state':'Grass-roots',
+          'addressType':'aggregate',
+          'fullName':'Wooden',
+          'mobile':54,
+          'addressNo':355
         }],
-        'wishlist':[{
-          '_id':false,
-          'productId':'iterate'
-        }],
+        'ScoreStatistics':{
+          'TotalListeningScore':'Car',
+          'TotalReadingScore':'capacitor',
+          'TestCount':990
+        },
         'userType':authConstant.USER_TYPES.Admin,
-        'mobileNo':'(303) 404-5701',
+        'gender':'Pangender',
+        'phone':'(073) 097-2267',
+        'intro':'back',
+        'mobileNo':'(711) 009-6552',
         'ssoAuth':{
-          'googleId':'Refined',
-          'facebookId':'Pizza'
+          'googleId':'6th',
+          'facebookId':'Buckinghamshire'
         },
         'addedBy':insertedUser.insertedId,
         'updatedBy':insertedUser.insertedId
@@ -124,8 +132,8 @@ describe('POST /login -> if username and password is correct', () => {
       .post('/admin/auth/login')
       .send(
         {
-          username: 'Brook_Schinner',
-          password: 'AVgrShfoB7UuvtS'
+          username: 'Maureen_Price20',
+          password: 'XlN0nmaYdQNlgi3'
         }
       );
     expect(user.statusCode).toBe(200);
@@ -144,7 +152,7 @@ describe('POST /login -> if username is incorrect', () => {
       .send(
         {
           username: 'wrong.username',
-          password: 'AVgrShfoB7UuvtS'
+          password: 'XlN0nmaYdQNlgi3'
         }
       );
 
@@ -159,7 +167,7 @@ describe('POST /login -> if password is incorrect', () => {
       .post('/admin/auth/login')
       .send(
         {
-          username: 'Brook_Schinner',
+          username: 'Maureen_Price20',
           password: 'wrong@password'
         }
       );
@@ -206,7 +214,7 @@ describe('POST /forgot-password -> if email passed from request body is valid an
   test('should return success message', async () => {
     let user = await request(app)
       .post('/admin/auth/forgot-password')
-      .send({ 'email':'Enid.Kris14@gmail.com', });
+      .send({ 'email':'Emerald.Rice66@gmail.com', });
 
     expect(user.statusCode).toBe(200);
     expect(user.body.status).toBe('SUCCESS');
@@ -219,8 +227,8 @@ describe('POST /validate-otp -> OTP is sent in request body and OTP is correct',
       .post('/admin/auth/login')
       .send(
         {
-          username: 'Brook_Schinner',
-          password: 'AVgrShfoB7UuvtS'
+          username: 'Maureen_Price20',
+          password: 'XlN0nmaYdQNlgi3'
         }).then(login => () => {
         return request(app)
           .get(`/admin/user/${login.body.data.id}`)
@@ -268,8 +276,8 @@ describe('PUT /reset-password -> code is sent in request body and code is correc
       .post('/admin/auth/login')
       .send(
         {
-          username: 'Brook_Schinner',
-          password: 'AVgrShfoB7UuvtS'
+          username: 'Maureen_Price20',
+          password: 'XlN0nmaYdQNlgi3'
         }).then(login => () => {
         return request(app)
           .get(`/admin/user/${login.body.data.id}`)

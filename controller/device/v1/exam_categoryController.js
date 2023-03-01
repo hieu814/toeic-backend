@@ -8,6 +8,7 @@ const exam_categorySchemaKey = require('../../../utils/validation/exam_categoryV
 const validation = require('../../../utils/validateRequest');
 const dbService = require('../../../utils/dbService');
 const ObjectId = require('mongodb').ObjectId;
+const deleteDependentService = require('../../../utils/deleteDependent');
 const utils = require('../../../utils/common');
    
 /**
@@ -239,6 +240,7 @@ const partialUpdateExam_category = async (req,res) => {
     return res.internalServerError({ message:error.message });
   }
 };
+    
 /**
  * @description : deactivate document of Exam_category from table by id;
  * @param {Object} req : request including id in request params.
@@ -250,12 +252,12 @@ const softDeleteExam_category = async (req,res) => {
     if (!req.params.id){
       return res.badRequest({ message : 'Insufficient request parameters! id is required.' });
     }
-    let query = { _id:req.params.id };
+    const query = { _id:req.params.id };
     const updateBody = {
       isDeleted: true,
       updatedBy: req.user.id,
     };
-    let updatedExam_category = await dbService.updateOne(Exam_category, query, updateBody);
+    let updatedExam_category = await deleteDependentService.softDeleteExam_category(query, updateBody);
     if (!updatedExam_category){
       return res.recordNotFound();
     }
@@ -264,7 +266,7 @@ const softDeleteExam_category = async (req,res) => {
     return res.internalServerError({ message:error.message }); 
   }
 };
-
+    
 /**
  * @description : delete document of Exam_category from table.
  * @param {Object} req : request including id as req param.
@@ -272,20 +274,24 @@ const softDeleteExam_category = async (req,res) => {
  * @return {Object} : deleted Exam_category. {status, message, data}
  */
 const deleteExam_category = async (req,res) => {
-  try { 
+  try {
     if (!req.params.id){
       return res.badRequest({ message : 'Insufficient request parameters! id is required.' });
     }
     const query = { _id:req.params.id };
-    const deletedExam_category = await dbService.deleteOne(Exam_category, query);
+    let deletedExam_category;
+    if (req.body.isWarning) { 
+      deletedExam_category = await deleteDependentService.countExam_category(query);
+    } else {
+      deletedExam_category = await deleteDependentService.deleteExam_category(query);
+    }
     if (!deletedExam_category){
       return res.recordNotFound();
     }
     return res.success({ data :deletedExam_category });
-        
   }
   catch (error){
-    return res.internalServerError({ message:error.message });
+    return res.internalServerError({ message:error.message }); 
   }
 };
     
@@ -302,15 +308,22 @@ const deleteManyExam_category = async (req, res) => {
       return res.badRequest();
     }
     const query = { _id:{ $in:ids } };
-    const deletedExam_category = await dbService.deleteMany(Exam_category,query);
+    let deletedExam_category;
+    if (req.body.isWarning) {
+      deletedExam_category = await deleteDependentService.countExam_category(query);
+    }
+    else {
+      deletedExam_category = await deleteDependentService.deleteExam_category(query);
+    }
     if (!deletedExam_category){
       return res.recordNotFound();
     }
-    return res.success({ data :{ count :deletedExam_category } });
+    return res.success({ data :deletedExam_category });
   } catch (error){
     return res.internalServerError({ message:error.message }); 
   }
 };
+    
 /**
  * @description : deactivate multiple documents of Exam_category from table by ids;
  * @param {Object} req : request including array of ids in request body.
@@ -328,12 +341,11 @@ const softDeleteManyExam_category = async (req,res) => {
       isDeleted: true,
       updatedBy: req.user.id,
     };
-    let updatedExam_category = await dbService.updateMany(Exam_category,query, updateBody);
+    let updatedExam_category = await deleteDependentService.softDeleteExam_category(query, updateBody);
     if (!updatedExam_category) {
       return res.recordNotFound();
     }
-    return res.success({ data:{ count :updatedExam_category } });
-        
+    return res.success({ data:updatedExam_category });
   } catch (error){
     return res.internalServerError({ message:error.message }); 
   }

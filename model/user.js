@@ -51,7 +51,7 @@ const schema = new Schema(
       ref:'user'
     },
 
-    shippingAddress:[{
+    TestResult:[{
       _id:false,
       pincode:{ type:String },
       address1:{ type:String },
@@ -62,24 +62,27 @@ const schema = new Schema(
       state:{ type:String },
       addressType:{ type:String },
       fullName:{ type:String },
-      mobile:{
-        type:Number,
-        min:10,
-        max:10
-      },
+      mobile:{ type:Number },
       addressNo:{ type:Number }
     }],
 
-    wishlist:[{
-      _id:false,
-      productId:{ type:String }
-    }],
+    ScoreStatistics:{
+      TotalListeningScore:{ type:String },
+      TotalReadingScore:{ type:String },
+      TestCount:{ type:Number }
+    },
 
     userType:{
       type:Number,
       enum:convertObjectToEnum(USER_TYPES),
       required:true
     },
+
+    gender:{ type:String },
+
+    phone:{ type:String },
+
+    intro:{ type:String },
 
     mobileNo:{ type:String },
 

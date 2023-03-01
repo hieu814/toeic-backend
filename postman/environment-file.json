@@ -1,5 +1,5 @@
 {
-  "id": "cc8734d8-c503-43b1-923a-fa4becd3f15d",
+  "id": "4504c7e0-ab7e-461d-bc85-01ea78fe9874",
   "name": "toeic_backend_environment",
   "values": [
     {
@@ -14,6 +14,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2023-01-17T08:35:34.432Z",
+  "_postman_exported_at": "2023-03-01T14:02:11.531Z",
   "_postman_exported_using": "Postman"
 }

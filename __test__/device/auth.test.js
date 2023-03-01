@@ -30,40 +30,44 @@ beforeAll(async function (){
 
     const user = dbInstance.collection('users');
     insertedUser = await user.insertOne({
-      username: 'Hertha.Boyer',
-      password: 'qAmih4cN77tAmmv',
-      email: 'Sadye_Ortiz@gmail.com',
-      name: 'Jesus Rutherford',
-      shippingAddress: [
+      username: 'Jonathon.Mosciski51',
+      password: 'xJKG78kTmCY3M2P',
+      email: 'Lillian.Kihn93@gmail.com',
+      name: 'Sonya Frami',
+      TestResult: [
         {
           _id: false,
-          pincode: 'Avon',
-          address1: '1080p',
-          address2: 'Account',
-          landmark: 'dynamic',
-          city: 'Operative',
-          isDefault: false,
-          state: 'pixel',
-          addressType: 'Maryland',
-          fullName: 'Representative',
-          mobile: 242,
-          addressNo: 560
+          pincode: 'dedicated',
+          address1: 'Generic',
+          address2: 'EXE',
+          landmark: 'national',
+          city: 'Pizza',
+          isDefault: true,
+          state: 'Accountability',
+          addressType: 'Toys',
+          fullName: 'Fresh',
+          mobile: 794,
+          addressNo: 548
         }
       ],
-      wishlist: [ {
-        _id: false,
-        productId: 'system' 
-      } ],
-      userType: 727,
-      mobileNo: '(844) 300-7731',
-      resetPasswordLink: {},
-      loginRetryLimit: 249,
-      loginReactiveTime: '2023-10-16T21:27:09.133Z',
-      ssoAuth: {
-        googleId: 'Pizza',
-        facebookId: 'application' 
+      ScoreStatistics: {
+        TotalListeningScore: 'Islands',
+        TotalReadingScore: 'Utah',
+        TestCount: 506
       },
-      id: '63c65dd6d96161954f3f1a2d'
+      userType: 136,
+      gender: 'Female to male transsexual man',
+      phone: '(941) 588-1355',
+      intro: 'Business-focused',
+      mobileNo: '(062) 254-3056',
+      resetPasswordLink: {},
+      loginRetryLimit: 334,
+      loginReactiveTime: '2023-07-05T22:47:53.995Z',
+      ssoAuth: {
+        googleId: 'uniform',
+        facebookId: 'index' 
+      },
+      id: '63ff5ae36319a6dec92b8bfd'
     });
   }
   catch (error) {
@@ -81,33 +85,37 @@ describe('POST /register -> if email and username is given', () => {
     let registeredUser = await request(app)
       .post('/device/auth/register')
       .send({
-        'username':'Sonny_Nicolas',
-        'password':'8SM4f1QmxqcSrQ9',
-        'email':'Elvera_Conroy25@yahoo.com',
-        'name':'Jaime Will V',
-        'shippingAddress':[{
+        'username':'Kaci_Thompson',
+        'password':'tDTrehnKA_Tm4fU',
+        'email':'Sophie.Raynor@yahoo.com',
+        'name':'Owen Jast',
+        'TestResult':[{
           '_id':false,
-          'pincode':'productivity',
-          'address1':'RAM',
-          'address2':'Distributed',
-          'landmark':'success',
-          'city':'override',
+          'pincode':'magnetic',
+          'address1':'Park',
+          'address2':'multi-byte',
+          'landmark':'Center',
+          'city':'Cambridgeshire',
           'isDefault':true,
-          'state':'Technician',
-          'addressType':'Communications',
-          'fullName':'Practical',
-          'mobile':66,
-          'addressNo':822
+          'state':'FTP',
+          'addressType':'Iranian',
+          'fullName':'bus',
+          'mobile':971,
+          'addressNo':369
         }],
-        'wishlist':[{
-          '_id':false,
-          'productId':'Loan'
-        }],
+        'ScoreStatistics':{
+          'TotalListeningScore':'array',
+          'TotalReadingScore':'drive',
+          'TestCount':901
+        },
         'userType':authConstant.USER_TYPES.User,
-        'mobileNo':'(518) 328-8054',
+        'gender':'Other',
+        'phone':'(520) 855-6664',
+        'intro':'Accounts',
+        'mobileNo':'(483) 345-2785',
         'ssoAuth':{
-          'googleId':'matrix',
-          'facebookId':'human-resource'
+          'googleId':'York',
+          'facebookId':'Representative'
         },
         'addedBy':insertedUser.insertedId,
         'updatedBy':insertedUser.insertedId
@@ -124,8 +132,8 @@ describe('POST /login -> if username and password is correct', () => {
       .post('/device/auth/login')
       .send(
         {
-          username: 'Sonny_Nicolas',
-          password: '8SM4f1QmxqcSrQ9'
+          username: 'Kaci_Thompson',
+          password: 'tDTrehnKA_Tm4fU'
         }
       );
     expect(user.statusCode).toBe(200);
@@ -144,7 +152,7 @@ describe('POST /login -> if username is incorrect', () => {
       .send(
         {
           username: 'wrong.username',
-          password: '8SM4f1QmxqcSrQ9'
+          password: 'tDTrehnKA_Tm4fU'
         }
       );
 
@@ -159,7 +167,7 @@ describe('POST /login -> if password is incorrect', () => {
       .post('/device/auth/login')
       .send(
         {
-          username: 'Sonny_Nicolas',
+          username: 'Kaci_Thompson',
           password: 'wrong@password'
         }
       );
@@ -206,7 +214,7 @@ describe('POST /forgot-password -> if email passed from request body is valid an
   test('should return success message', async () => {
     let user = await request(app)
       .post('/device/auth/forgot-password')
-      .send({ 'email':'Elvera_Conroy25@yahoo.com', });
+      .send({ 'email':'Sophie.Raynor@yahoo.com', });
 
     expect(user.statusCode).toBe(200);
     expect(user.body.status).toBe('SUCCESS');
@@ -219,8 +227,8 @@ describe('POST /validate-otp -> OTP is sent in request body and OTP is correct',
       .post('/device/auth/login')
       .send(
         {
-          username: 'Sonny_Nicolas',
-          password: '8SM4f1QmxqcSrQ9'
+          username: 'Kaci_Thompson',
+          password: 'tDTrehnKA_Tm4fU'
         }).then(login => () => {
         return request(app)
           .get(`/device/api/v1/user/${login.body.data.id}`)
@@ -268,8 +276,8 @@ describe('PUT /reset-password -> code is sent in request body and code is correc
       .post('/device/auth/login')
       .send(
         {
-          username: 'Sonny_Nicolas',
-          password: '8SM4f1QmxqcSrQ9'
+          username: 'Kaci_Thompson',
+          password: 'tDTrehnKA_Tm4fU'
         }).then(login => () => {
         return request(app)
           .get(`/device/api/v1/user/${login.body.data.id}`)

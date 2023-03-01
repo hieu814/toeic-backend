@@ -44,6 +44,11 @@ const schema = new Schema(
     updatedBy:{
       type:Schema.Types.ObjectId,
       ref:'user'
+    },
+
+    category:{
+      ref:'exam_category',
+      type:Schema.Types.ObjectId
     }
   }
   ,{ 

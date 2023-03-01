@@ -6,7 +6,6 @@
 let Result = require('../model/result');
 let Word_category = require('../model/word_category');
 let Word = require('../model/word');
-let Question = require('../model/question');
 let Group_question = require('../model/group_question');
 let Exam = require('../model/exam');
 let Exam_category = require('../model/exam_category');
@@ -50,15 +49,6 @@ const deleteWord = async (filter) =>{
   }
 };
 
-const deleteQuestion = async (filter) =>{
-  try {
-    let response  = await dbService.deleteMany(Question,filter);
-    return response;
-  } catch (error){
-    throw new Error(error.message);
-  }
-};
-
 const deleteGroup_question = async (filter) =>{
   try {
     let response  = await dbService.deleteMany(Group_question,filter);
@@ -79,8 +69,20 @@ const deleteExam = async (filter) =>{
 
 const deleteExam_category = async (filter) =>{
   try {
-    let response  = await dbService.deleteMany(Exam_category,filter);
-    return response;
+    let exam_category = await dbService.findMany(Exam_category,filter);
+    if (exam_category && exam_category.length){
+      exam_category = exam_category.map((obj) => obj.id);
+
+      const examFilter = { $or: [{ category : { $in : exam_category } }] };
+      const examCnt = await dbService.deleteMany(Exam,examFilter);
+
+      let deleted  = await dbService.deleteMany(Exam_category,filter);
+      let response = { exam :examCnt, };
+      return response; 
+    } else {
+      return {  exam_category : 0 };
+    }
+
   } catch (error){
     throw new Error(error.message);
   }
@@ -131,9 +133,6 @@ const deleteUser = async (filter) =>{
       const wordFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const wordCnt = await dbService.deleteMany(Word,wordFilter);
 
-      const questionFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
-      const questionCnt = await dbService.deleteMany(Question,questionFilter);
-
       const group_questionFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const group_questionCnt = await dbService.deleteMany(Group_question,group_questionFilter);
 
@@ -178,7 +177,6 @@ const deleteUser = async (filter) =>{
         result :resultCnt,
         word_category :word_categoryCnt,
         word :wordCnt,
-        question :questionCnt,
         group_question :group_questionCnt,
         exam :examCnt,
         exam_category :exam_categoryCnt,
@@ -344,15 +342,6 @@ const countWord = async (filter) =>{
   }
 };
 
-const countQuestion = async (filter) =>{
-  try {
-    const questionCnt =  await dbService.count(Question,filter);
-    return { question : questionCnt };
-  } catch (error){
-    throw new Error(error.message);
-  }
-};
-
 const countGroup_question = async (filter) =>{
   try {
     const group_questionCnt =  await dbService.count(Group_question,filter);
@@ -373,8 +362,18 @@ const countExam = async (filter) =>{
 
 const countExam_category = async (filter) =>{
   try {
-    const exam_categoryCnt =  await dbService.count(Exam_category,filter);
-    return { exam_category : exam_categoryCnt };
+    let exam_category = await dbService.findMany(Exam_category,filter);
+    if (exam_category && exam_category.length){
+      exam_category = exam_category.map((obj) => obj.id);
+
+      const examFilter = { $or: [{ category : { $in : exam_category } }] };
+      const examCnt =  await dbService.count(Exam,examFilter);
+
+      let response = { exam : examCnt, };
+      return response; 
+    } else {
+      return {  exam_category : 0 };
+    }
   } catch (error){
     throw new Error(error.message);
   }
@@ -423,9 +422,6 @@ const countUser = async (filter) =>{
       const wordFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const wordCnt =  await dbService.count(Word,wordFilter);
 
-      const questionFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
-      const questionCnt =  await dbService.count(Question,questionFilter);
-
       const group_questionFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const group_questionCnt =  await dbService.count(Group_question,group_questionFilter);
 
@@ -469,7 +465,6 @@ const countUser = async (filter) =>{
         result : resultCnt,
         word_category : word_categoryCnt,
         word : wordCnt,
-        question : questionCnt,
         group_question : group_questionCnt,
         exam : examCnt,
         exam_category : exam_categoryCnt,
@@ -628,15 +623,6 @@ const softDeleteWord = async (filter,updateBody) =>{
   }
 };
 
-const softDeleteQuestion = async (filter,updateBody) =>{  
-  try {
-    const questionCnt =  await dbService.updateMany(Question,filter);
-    return { question : questionCnt };
-  } catch (error){
-    throw new Error(error.message);
-  }
-};
-
 const softDeleteGroup_question = async (filter,updateBody) =>{  
   try {
     const group_questionCnt =  await dbService.updateMany(Group_question,filter);
@@ -657,8 +643,19 @@ const softDeleteExam = async (filter,updateBody) =>{
 
 const softDeleteExam_category = async (filter,updateBody) =>{  
   try {
-    const exam_categoryCnt =  await dbService.updateMany(Exam_category,filter);
-    return { exam_category : exam_categoryCnt };
+    let exam_category = await dbService.findMany(Exam_category,filter, { id:1 });
+    if (exam_category.length){
+      exam_category = exam_category.map((obj) => obj.id);
+
+      const examFilter = { '$or': [{ category : { '$in' : exam_category } }] };
+      const examCnt = await dbService.updateMany(Exam,examFilter,updateBody);
+      let updated = await dbService.updateMany(Exam_category,filter,updateBody);
+
+      let response = { exam :examCnt, };
+      return response;
+    } else {
+      return {  exam_category : 0 };
+    }
   } catch (error){
     throw new Error(error.message);
   }
@@ -708,9 +705,6 @@ const softDeleteUser = async (filter,updateBody) =>{
       const wordFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } }] };
       const wordCnt = await dbService.updateMany(Word,wordFilter,updateBody);
 
-      const questionFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } }] };
-      const questionCnt = await dbService.updateMany(Question,questionFilter,updateBody);
-
       const group_questionFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } }] };
       const group_questionCnt = await dbService.updateMany(Group_question,group_questionFilter,updateBody);
 
@@ -755,7 +749,6 @@ const softDeleteUser = async (filter,updateBody) =>{
         result :resultCnt,
         word_category :word_categoryCnt,
         word :wordCnt,
-        question :questionCnt,
         group_question :group_questionCnt,
         exam :examCnt,
         exam_category :exam_categoryCnt,
@@ -894,7 +887,6 @@ module.exports = {
   deleteResult,
   deleteWord_category,
   deleteWord,
-  deleteQuestion,
   deleteGroup_question,
   deleteExam,
   deleteExam_category,
@@ -912,7 +904,6 @@ module.exports = {
   countResult,
   countWord_category,
   countWord,
-  countQuestion,
   countGroup_question,
   countExam,
   countExam_category,
@@ -930,7 +921,6 @@ module.exports = {
   softDeleteResult,
   softDeleteWord_category,
   softDeleteWord,
-  softDeleteQuestion,
   softDeleteGroup_question,
   softDeleteExam,
   softDeleteExam_category,

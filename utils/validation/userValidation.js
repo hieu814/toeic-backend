@@ -18,9 +18,16 @@ exports.schemaKeys = joi.object({
   email: joi.string().allow(null).allow(''),
   name: joi.string().allow(null).allow(''),
   isActive: joi.boolean(),
-  shippingAddress: joi.array().items(joi.object()),
-  wishlist: joi.array().items(joi.object()),
+  TestResult: joi.array().items(joi.object()),
+  ScoreStatistics: joi.object({
+    TotalListeningScore:joi.string(),
+    TotalReadingScore:joi.string(),
+    TestCount:joi.number().integer()
+  }).allow(0),
   userType: joi.number().allow(0),
+  gender: joi.string().allow(null).allow(''),
+  phone: joi.string().allow(null).allow(''),
+  intro: joi.string().allow(null).allow(''),
   mobileNo: joi.string().allow(null).allow(''),
   isDeleted: joi.boolean(),
   resetPasswordLink: joi.object({
@@ -40,9 +47,16 @@ exports.updateSchemaKeys = joi.object({
   email: joi.string().allow(null).allow(''),
   name: joi.string().allow(null).allow(''),
   isActive: joi.boolean(),
-  shippingAddress: joi.array().items(joi.object()),
-  wishlist: joi.array().items(joi.object()),
+  TestResult: joi.array().items(joi.object()),
+  ScoreStatistics: joi.object({
+    TotalListeningScore:joi.string(),
+    TotalReadingScore:joi.string(),
+    TestCount:joi.number().integer()
+  }).allow(0),
   userType: joi.number().allow(0),
+  gender: joi.string().allow(null).allow(''),
+  phone: joi.string().allow(null).allow(''),
+  intro: joi.string().allow(null).allow(''),
   mobileNo: joi.string().allow(null).allow(''),
   isDeleted: joi.boolean(),
   resetPasswordLink: joi.object({
@@ -67,6 +81,10 @@ exports.findFilterKeys = joi.object({
       email: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
       name: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
       isActive: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
+      ScoreStatistics: joi.alternatives().try(joi.array().items(),joi.number().integer(),joi.object()),
+      gender: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
+      phone: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
+      intro: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
       mobileNo: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
       isDeleted: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
       ssoAuth: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
