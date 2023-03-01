@@ -3,9 +3,9 @@
  * @description :: index route file of admin platform.
  */
 
-const express =  require('express');
-const router =  express.Router();
-router.use('/admin/auth',require('./auth'));
+const express = require('express');
+const router = express.Router();
+router.use('/admin/auth', require('./auth'));
 router.use(require('./resultRoutes'));
 router.use(require('./word_categoryRoutes'));
 router.use(require('./wordRoutes'));
@@ -22,5 +22,8 @@ router.use(require('./projectRouteRoutes'));
 router.use(require('./routeRoleRoutes'));
 router.use(require('./userRoleRoutes'));
 router.use(require('./uploadRoutes'));
+router.post('/test', (req, res) => {
+    console.log(req.body);
+});
 
 module.exports = router;

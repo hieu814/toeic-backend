@@ -38,14 +38,15 @@ let maxFileSize = 5; //In Megabyte
  */
 const upload = async (req, res) => {
   try {
+
     // Create Directory if not exist.
     await makeDirectory(defaultDirectory);
 
     // Setting up formidable options.
     const options = {
-      multiples : true,
-      maxFileSize : 300 * 1024 * 1024, //300 MB
-      maxFieldsSize : 100 * 1024 * 1024 //50 MB
+      multiples: true,
+      maxFileSize: 300 * 1024 * 1024, //300 MB
+      maxFieldsSize: 100 * 1024 * 1024 //50 MB
     };
     const form = new formidable.IncomingForm(options);
 
@@ -53,7 +54,13 @@ const upload = async (req, res) => {
     const uploadFileRes = await new Promise(async (resolve, reject) => {
 
       form.parse(req, async function (error, fields, files) {
-
+        if (files?.file) {
+          files = {
+            files: [
+              files?.file
+            ]
+          }
+        }
         if (error) {
           reject(error);
         }
@@ -76,8 +83,9 @@ const upload = async (req, res) => {
 
         for (let file of files['files']) {
 
-          let response = await uploadFiles(file, fields, fileCount++);
 
+          let response = await uploadFiles(file, fields, fileCount++);
+          console.log(response);
           if (response.status == false) {
             uploadFailed.push({
               'name': file.originalFilename,
@@ -103,25 +111,29 @@ const upload = async (req, res) => {
         });
       });
     });
-    
+
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+      console.log("upload ok ",uploadFileRes);
       return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
+      console.log("upload  ",message);
       return res.failure({
         message: message,
         data: uploadFileRes
       });
     }
   } catch (error) {
+    console.log("upload error ",error);
     if (error.name && error.name == 'validationError') {
+      
       return res.validationError({ message: error.message });
     } else {
-      return res.internalServerError({ message:error.message }); 
+      return res.internalServerError({ message: error.message });
     }
   }
 };
@@ -151,13 +163,13 @@ const makeDirectory = async (directoryPath) => {
  * @param {number} fileCount : total number of files to upload
  * @return {Object} : response for file upload
  */
-const uploadFiles = async  (file, fields, fileCount) => {
+const uploadFiles = async (file, fields, fileCount) => {
 
-  let tempPath = file.filepath;
+  let tempPath = file?.filepath;
   let unlink;
-  let fileName = file.originalFilename;
+  let fileName = file?.originalFilename;
 
-  let extension = path.extname(file.originalFilename);
+  let extension = path.extname(file?.originalFilename);
   extension = extension.split('.').pop();
 
   fileType = file.mimetype;
@@ -196,14 +208,14 @@ const uploadFiles = async  (file, fields, fileCount) => {
     newPath = defaultDirectory + '/' + fields.fileName + '-' + fileCount + path.extname(file.originalFilename);
     fileName = fields.fileName;
   }
-  
+
   const response = await new Promise(async (resolve, reject) => {
     fs.readFile(tempPath, function (error, data) {
       fs.writeFile(newPath, data, async function (error) {
-  
+
         //Remove file from temp
         unlink = await unlinkFile(tempPath);
-  
+
         if (unlink.status == false) {
           reject(unlink);
         } else {
