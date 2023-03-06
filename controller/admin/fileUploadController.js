@@ -54,6 +54,7 @@ const upload = async (req, res) => {
     const uploadFileRes = await new Promise(async (resolve, reject) => {
 
       form.parse(req, async function (error, fields, files) {
+        console.log(files);
         if (files?.file) {
           files = {
             files: [

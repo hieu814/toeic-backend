@@ -23,7 +23,7 @@ router.use(require('./routeRoleRoutes'));
 router.use(require('./userRoleRoutes'));
 router.use(require('./uploadRoutes'));
 router.post('/test', (req, res) => {
-    console.log(req.body);
+    console.log(req.da);
 });
 
 module.exports = router;
