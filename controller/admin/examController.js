@@ -27,7 +27,7 @@ const addExam = async (req, res) => {
       return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     dataToCreate.addedBy = req.user.id;
-    dataToCreate.image = "sdaasdasda"
+    // dataToCreate.image = "sdaasdasda"
     dataToCreate = new Exam(dataToCreate);
     console.log({ data: dataToCreate });
     let createdExam = await dbService.create(Exam, dataToCreate);
