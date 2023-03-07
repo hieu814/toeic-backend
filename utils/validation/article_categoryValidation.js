@@ -5,13 +5,13 @@
 
 const joi = require('joi');
 const {
-  options, isCountOnly, populate, select 
+  options, isCountOnly, populate, select
 } = require('./commonFilterValidation');
 
 /** validation keys and properties of article_category */
 exports.schemaKeys = joi.object({
   name: joi.string().allow(null).allow(''),
-  type: joi.string().allow(null).allow(''),
+  type: joi.number().integer(),
   isDeleted: joi.boolean(),
   isActive: joi.boolean()
 }).unknown(true);
@@ -19,7 +19,8 @@ exports.schemaKeys = joi.object({
 /** validation keys and properties of article_category for updation */
 exports.updateSchemaKeys = joi.object({
   name: joi.string().allow(null).allow(''),
-  type: joi.string().allow(null).allow(''),
+  image: joi.string().allow(null).allow(''),
+  type: joi.number().integer().allow(null),
   isDeleted: joi.boolean(),
   isActive: joi.boolean(),
   _id: joi.string().regex(/^[0-9a-fA-F]{24}$/)
@@ -31,16 +32,17 @@ exports.findFilterKeys = joi.object({
   options: options,
   ...Object.fromEntries(
     keys.map(key => [key, joi.object({
-      name: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
-      type: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
-      isDeleted: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
-      isActive: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
+      name: joi.alternatives().try(joi.array().items(), joi.string(), joi.object()),
+      image: joi.alternatives().try(joi.array().items(), joi.string(), joi.object()),
+      // type: joi.alternatives().try(joi.array().items(), joi.string(), joi.object(), joi.number().integer()),
+      isDeleted: joi.alternatives().try(joi.array().items(), joi.boolean(), joi.object()),
+      isActive: joi.alternatives().try(joi.array().items(), joi.boolean(), joi.object()),
       id: joi.any(),
-      _id: joi.alternatives().try(joi.array().items(),joi.string().regex(/^[0-9a-fA-F]{24}$/),joi.object())
+      _id: joi.alternatives().try(joi.array().items(), joi.string().regex(/^[0-9a-fA-F]{24}$/), joi.object())
     }).unknown(true),])
   ),
   isCountOnly: isCountOnly,
   populate: joi.array().items(populate),
   select: select
-    
+
 }).unknown(true);

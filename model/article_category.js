@@ -22,33 +22,37 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
   {
 
-    name:{ type:String },
+    name: { type: String },
 
-    type:{ type:String },
+    type: { type: Number },
 
-    isDeleted:{ type:Boolean },
+    image: { type: String },
 
-    isActive:{ type:Boolean },
+    description: { type: String },
 
-    createdAt:{ type:Date },
+    isDeleted: { type: Boolean },
 
-    updatedAt:{ type:Date },
+    isActive: { type: Boolean },
 
-    addedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    createdAt: { type: Date },
+
+    updatedAt: { type: Date },
+
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    updatedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   }
-  ,{ 
-    timestamps: { 
-      createdAt: 'createdAt', 
-      updatedAt: 'updatedAt' 
-    } 
+  , {
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    }
   }
 );
 schema.pre('save', async function (next) {
@@ -58,7 +62,7 @@ schema.pre('save', async function (next) {
 });
 
 schema.pre('insertMany', async function (next, docs) {
-  if (docs && docs.length){
+  if (docs && docs.length) {
     for (let index = 0; index < docs.length; index++) {
       const element = docs[index];
       element.isDeleted = false;
@@ -70,13 +74,13 @@ schema.pre('insertMany', async function (next, docs) {
 
 schema.method('toJSON', function () {
   const {
-    _id, __v, ...object 
-  } = this.toObject({ virtuals:true });
+    _id, __v, ...object
+  } = this.toObject({ virtuals: true });
   object.id = _id;
-     
+
   return object;
 });
 schema.plugin(mongoosePaginate);
 schema.plugin(idValidator);
-const article_category = mongoose.model('article_category',schema);
+const article_category = mongoose.model('article_category', schema);
 module.exports = article_category;
