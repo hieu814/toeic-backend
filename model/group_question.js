@@ -30,6 +30,11 @@ const schema = new Schema(
 
     updatedAt:{ type:Date },
 
+    exam:{
+      type:Schema.Types.ObjectId,
+      ref:'exam'
+    },
+
     addedBy:{
       type:Schema.Types.ObjectId,
       ref:'user'
@@ -51,10 +56,7 @@ const schema = new Schema(
       correct_answer:{ type:String }
     }],
 
-    group:{
-      from:{ type:Number },
-      to:{ type:Number }
-    },
+    group:{ type:String },
 
     passage:{ type:String },
 
