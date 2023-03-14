@@ -26,7 +26,8 @@ let allowedFileTypes = [
   'x-msdos-program',
   'x-msdownload',
   'exe',
-  'x-ms-dos-executable'
+  'x-ms-dos-executable',
+  'mp3'
 ];
 let maxFileSize = 5; //In Megabyte
 
@@ -162,10 +163,10 @@ const uploadFiles = async  (file, fields, fileCount) => {
 
   fileType = file.mimetype;
 
-  if (allowedFileTypes.length == 0 || !allowedFileTypes.includes(extension)) {
+  if (allowedFileTypes.length == 0 || !allowedFileTypes.includes(extension.toLowerCase())) {
     return {
       status: false,
-      message: 'Filetype not allowed.'
+      message: `Type ${extension} not allowed.`
     };
   }
 

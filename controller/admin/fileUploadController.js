@@ -26,9 +26,10 @@ let allowedFileTypes = [
   'x-msdos-program',
   'x-msdownload',
   'exe',
-  'x-ms-dos-executable'
+  'x-ms-dos-executable',
+  'mp3'
 ];
-let maxFileSize = 5; //In Megabyte
+let maxFileSize = 5000; //In Megabyte
 
 /**
  * @description : uploads file using formidable.
@@ -54,7 +55,7 @@ const upload = async (req, res) => {
     const uploadFileRes = await new Promise(async (resolve, reject) => {
 
       form.parse(req, async function (error, fields, files) {
-        console.log(files);
+        console.log("files ",files);
         if (files?.file) {
           files = {
             files: [
@@ -115,23 +116,23 @@ const upload = async (req, res) => {
 
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      console.log("upload ok ",uploadFileRes);
+      console.log("upload ok ", uploadFileRes);
       return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      console.log("upload  ",message);
+      console.log("upload  ", message);
       return res.failure({
         message: message,
         data: uploadFileRes
       });
     }
   } catch (error) {
-    console.log("upload error ",error);
+    console.log("upload error ", error);
     if (error.name && error.name == 'validationError') {
-      
+
       return res.validationError({ message: error.message });
     } else {
       return res.internalServerError({ message: error.message });
@@ -169,16 +170,16 @@ const uploadFiles = async (file, fields, fileCount) => {
   let tempPath = file?.filepath;
   let unlink;
   let fileName = file?.originalFilename;
-
+  console.log(file);
   let extension = path.extname(file?.originalFilename);
   extension = extension.split('.').pop();
 
   fileType = file.mimetype;
 
-  if (allowedFileTypes.length == 0 || !allowedFileTypes.includes(extension)) {
+  if (allowedFileTypes.length == 0 || !allowedFileTypes.includes(extension.toLowerCase())) {
     return {
       status: false,
-      message: 'Filetype not allowed.'
+      message: `Type ${extension} not allowed.`
     };
   }
 
