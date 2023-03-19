@@ -22,55 +22,59 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
   {
 
-    isDeleted:{ type:Boolean },
+    isDeleted: { type: Boolean },
 
-    isActive:{ type:Boolean },
+    isActive: { type: Boolean },
 
-    createdAt:{ type:Date },
+    createdAt: { type: Date },
 
-    updatedAt:{ type:Date },
+    updatedAt: { type: Date },
 
-    exam:{
-      type:Schema.Types.ObjectId,
-      ref:'exam'
+    exam: {
+      type: Schema.Types.ObjectId,
+      ref: 'exam'
     },
 
-    addedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    updatedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    questions:[{
-      _id:false,
-      number:{ type:Number },
-      question:{ type:String },
-      A:{ type:String },
-      B:{ type:String },
-      C:{ type:String },
-      D:{ type:String },
-      correct_answer:{ type:String }
+    questions: [{
+      
+      number: { type: Number },
+      question: { type: String },
+      A: { type: String },
+      B: { type: String },
+      C: { type: String },
+      D: { type: String },
+      correct_answer: { type: String }
     }],
 
-    group:{ type:String },
+    type: { type: Number },
 
-    passage:{ type:String },
+    group: { type: String },
 
-    transcript:{ type:String },
+    label: { type: String },
 
-    image:{ type:String },
+    passage: { type: String },
 
-    audio:{ type:String }
+    transcript: { type: String },
+
+    image: { type: String },
+
+    audio: { type: String }
   }
-  ,{ 
-    timestamps: { 
-      createdAt: 'createdAt', 
-      updatedAt: 'updatedAt' 
-    } 
+  , {
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    }
   }
 );
 schema.pre('save', async function (next) {
@@ -80,7 +84,7 @@ schema.pre('save', async function (next) {
 });
 
 schema.pre('insertMany', async function (next, docs) {
-  if (docs && docs.length){
+  if (docs && docs.length) {
     for (let index = 0; index < docs.length; index++) {
       const element = docs[index];
       element.isDeleted = false;
@@ -92,13 +96,13 @@ schema.pre('insertMany', async function (next, docs) {
 
 schema.method('toJSON', function () {
   const {
-    _id, __v, ...object 
-  } = this.toObject({ virtuals:true });
+    _id, __v, ...object
+  } = this.toObject({ virtuals: true });
   object.id = _id;
-     
+
   return object;
 });
 schema.plugin(mongoosePaginate);
 schema.plugin(idValidator);
-const group_question = mongoose.model('group_question',schema);
+const group_question = mongoose.model('group_question', schema);
 module.exports = group_question;

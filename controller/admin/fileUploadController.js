@@ -55,7 +55,7 @@ const upload = async (req, res) => {
     const uploadFileRes = await new Promise(async (resolve, reject) => {
 
       form.parse(req, async function (error, fields, files) {
-        console.log("files ",files);
+        console.log("files ", files);
         if (files?.file) {
           files = {
             files: [
@@ -77,6 +77,7 @@ const upload = async (req, res) => {
             'message': 'Select at least one file to upload.',
             'name': 'validationError'
           });
+          return;
         }
         if (!Array.isArray(files['files'])) {
           fileArr.push(files['files']);

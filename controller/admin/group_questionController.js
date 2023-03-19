@@ -166,10 +166,12 @@ const updateGroup_question = async (req, res) => {
       ...req.body,
       updatedBy: req.user.id,
     };
+    console.log(JSON.stringify(dataToUpdate));
     let validateRequest = validation.validateParamsWithJoi(
       dataToUpdate,
       group_questionSchemaKey.updateSchemaKeys
     );
+
     if (!validateRequest.isValid) {
       return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
