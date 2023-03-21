@@ -166,12 +166,11 @@ const updateGroup_question = async (req, res) => {
       ...req.body,
       updatedBy: req.user.id,
     };
-    console.log(JSON.stringify(dataToUpdate));
     let validateRequest = validation.validateParamsWithJoi(
       dataToUpdate,
       group_questionSchemaKey.updateSchemaKeys
     );
-
+    console.log({ requestBody: req.body });
     if (!validateRequest.isValid) {
       return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
@@ -180,6 +179,7 @@ const updateGroup_question = async (req, res) => {
     if (!updatedGroup_question) {
       return res.recordNotFound();
     }
+    console.log({ updatedGroup_question });
     return res.success({ data: updatedGroup_question });
   } catch (error) {
     return res.internalServerError({ message: error.message });

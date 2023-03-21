@@ -28,6 +28,11 @@ const schema = new Schema(
 
     image:{ type:String },
 
+    questions: [{
+      type: Schema.Types.ObjectId,
+      ref: 'group_question',
+    }],
+
     isDeleted:{ type:Boolean },
 
     isActive:{ type:Boolean },

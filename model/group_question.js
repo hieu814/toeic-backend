@@ -46,7 +46,7 @@ const schema = new Schema(
     },
 
     questions: [{
-      
+      _id: false,
       number: { type: Number },
       question: { type: String },
       A: { type: String },
@@ -62,7 +62,15 @@ const schema = new Schema(
 
     label: { type: String },
 
-    passage: { type: String },
+    passages: [{
+      _id: false,
+
+      number: { type: Number },
+
+      content: { type: String },
+
+      image: { type: String },
+    }],
 
     transcript: { type: String },
 
