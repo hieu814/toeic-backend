@@ -22,13 +22,13 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
   {
 
-    name: { type: String },
+    name: { type: String ,default:""},
 
     type: { type: Number },
 
-    image: { type: String },
+    image: { type: String ,default:""},
 
-    description: { type: String },
+    description: { type: String ,default:""},
 
     isDeleted: { type: Boolean },
 

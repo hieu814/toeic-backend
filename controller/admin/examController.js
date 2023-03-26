@@ -117,6 +117,9 @@ const getExam = async (req, res) => {
     }
     query._id = req.params.id;
     let options = {};
+    // const options = {
+    //   populate: 'questions'
+    // };
     let foundExam = await dbService.findOne(Exam, query, options);
     if (!foundExam) {
       return res.recordNotFound();

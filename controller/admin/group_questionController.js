@@ -53,8 +53,13 @@ const bulkInsertGroup_question = async (req, res) => {
       };
     }
     let createdGroup_questions = await dbService.create(Group_question, dataToCreate);
-    createdGroup_questions = { count: createdGroup_questions ? createdGroup_questions.length : 0 };
-    return res.success({ data: { count: createdGroup_questions.count || 0 } });
+    // createdGroup_questions = { count: createdGroup_questions ? createdGroup_questions.length : 0, };
+    let ids = Array.from((createdGroup_questions || []), (field) => {
+      return field.id
+    })
+    return res.success({
+      data: ids || []
+    });
   } catch (error) {
     return res.internalServerError({ message: error.message });
   }
@@ -204,6 +209,7 @@ const bulkUpdateGroup_question = async (req, res) => {
       };
     }
     let updatedGroup_question = await dbService.updateMany(Group_question, filter, dataToUpdate);
+    console.log({ updatedGroup_question });
     if (!updatedGroup_question) {
       return res.recordNotFound();
     }

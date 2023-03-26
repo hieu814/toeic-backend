@@ -24,7 +24,7 @@ const deleteOne = (model, filter, options = { new: true }) => new Promise((resol
 
 // update multiple documents and returns count
 const updateMany = (model, filter, data) => new Promise((resolve, reject) => {
-  model.updateMany(filter, data, (error, result) => {
+  model.updateMany(filter, data, { new: true }, (error, result) => {
     if (error) reject(error);
     else resolve(result.modifiedCount);
   });
@@ -40,15 +40,24 @@ const deleteMany = (model, filter) => new Promise((resolve, reject) => {
 
 // find single document by query
 const findOne = (model, filter, options = {}) => new Promise((resolve, reject) => {
-  model.findOne(filter, options, (error, result) => {
-    if (error) reject(error);
-    else resolve(result);
-  });
+  if (options.populate) {
+    model.findOne(filter).populate(options.populate).exec((error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  } else {
+    model.findOne(filter, options, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  }
+
 });
+
 
 // find multiple documents
 const findMany = (model, filter, options = {}) => new Promise((resolve, reject) => {
-  model.find(filter, options, (error, result) => {
+  model.find(filter, null, options, (error, result) => {
     if (error) reject(error);
     else resolve(result);
   });

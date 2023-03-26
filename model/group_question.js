@@ -48,35 +48,35 @@ const schema = new Schema(
     questions: [{
       _id: false,
       number: { type: Number },
-      question: { type: String },
-      A: { type: String },
-      B: { type: String },
-      C: { type: String },
-      D: { type: String },
-      correct_answer: { type: String }
+      question: { type: String ,default:""},
+      A: { type: String ,default:""},
+      B: { type: String ,default:""},
+      C: { type: String ,default:""},
+      D: { type: String ,default:""},
+      correct_answer: { type: String ,default:""}
     }],
 
     type: { type: Number },
 
-    group: { type: String },
+    group: { type: String ,default:""},
 
-    label: { type: String },
+    label: { type: String ,default:""},
 
     passages: [{
       _id: false,
 
       number: { type: Number },
 
-      content: { type: String },
+      content: { type: String ,default:""},
 
-      image: { type: String },
+      image: { type: String ,default:""},
     }],
 
-    transcript: { type: String },
+    transcript: { type: String ,default:""},
 
-    image: { type: String },
+    image: { type: String ,default:""},
 
-    audio: { type: String }
+    audio: { type: String ,default:""}
   }
   , {
     timestamps: {
