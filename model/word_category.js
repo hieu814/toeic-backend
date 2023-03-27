@@ -45,8 +45,10 @@ const schema = new Schema(
     description:{ type:String },
 
     image:{ type:String },
-
-    words:{ type:Array }
+    words:{
+      type:Schema.Types.ObjectId,
+      ref:'word'
+    },
   }
   ,{ 
     timestamps: { 

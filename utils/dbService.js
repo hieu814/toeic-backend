@@ -5,7 +5,61 @@ const create = (model, data) => new Promise((resolve, reject) => {
     else resolve(result);
   });
 });
+const create2 = (model, data, query) => new Promise((resolve, reject) => {
+  const uniqueDocs = data.reduce((acc, doc) => {
+    const existingDoc = acc.find((d) => d[query.filter] === doc[query.filter]);
+    if (!existingDoc) {
+      acc.push(doc);
+    } else {
+      existingDoc.val = doc.val;
+    }
+    return acc;
+  }, []);
+  const operations = uniqueDocs.map(doc => ({
+    updateOne: {
+      filter: { [query.filter]: doc[query.filter] },
+      update: { $set: doc },
+      upsert: true
+    }
+  }));
 
+  model.bulkWrite(operations)
+    .then((_) => {
+      var _filterName = Array.from(uniqueDocs, (val => val[query.filter]))
+      model.find({ name: { $in: _filterName } })
+        .then((docs) => {
+          resolve(docs);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+// for create or update
+const createWithUpsert = (model, data, query) => new Promise((resolve, reject) => {
+
+  const operations = data.map(doc => ({
+
+    updateOne: {
+      filter: { [query.filter]: doc[query.filter] },
+      update: { $set: doc },
+      upsert: true
+    }
+  }));
+
+  model.bulkWrite(operations)
+    .then((result) => {
+      resolve(result);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+
+});
 // update single document that will return updated document
 const updateOne = (model, filter, data, options = { new: true }) => new Promise((resolve, reject) => {
   model.findOneAndUpdate(filter, data, options, (error, result) => {
@@ -88,5 +142,7 @@ module.exports = {
   findOne,
   findMany,
   count,
-  paginate
+  paginate,
+  createWithUpsert,
+  create2
 };

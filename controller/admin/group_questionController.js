@@ -209,7 +209,6 @@ const bulkUpdateGroup_question = async (req, res) => {
       };
     }
     let updatedGroup_question = await dbService.updateMany(Group_question, filter, dataToUpdate);
-    console.log({ updatedGroup_question });
     if (!updatedGroup_question) {
       return res.recordNotFound();
     }
