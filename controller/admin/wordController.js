@@ -52,10 +52,13 @@ const bulkInsertWord = async (req, res) => {
         addedBy: req.user.id
       };
     }
-    console.log(dataToCreate);
+    // console.log(dataToCreate);
     let createdWords = await dbService.create2(Word, dataToCreate, { filter: "name" });
-    // createdWords = { count: createdWords ? createdWords.length : 0 };
-    return res.success({ data: createdWords || [] });
+    console.log("add ok ", createdWords.length);
+    return res.success({
+      data: createdWords || [],
+      count: createdWords.length
+    });
   } catch (error) {
     return res.internalServerError({ message: error.message });
   }
@@ -84,6 +87,7 @@ const findAllWord = async (req, res) => {
     }
     if (req.body.isCountOnly) {
       let totalRecords = await dbService.count(Word, query);
+      console.log("get all word length ", totalRecords.length);
       return res.success({ data: { totalRecords } });
     }
     if (req.body && typeof req.body.options === 'object' && req.body.options !== null) {
@@ -170,6 +174,7 @@ const updateWord = async (req, res) => {
       return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     const query = { _id: req.params.id };
+    console.log(dataToUpdate);
     let updatedWord = await dbService.updateOne(Word, query, dataToUpdate);
     if (!updatedWord) {
       return res.recordNotFound();
