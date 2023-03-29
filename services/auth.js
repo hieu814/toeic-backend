@@ -7,8 +7,8 @@ const User = require('../model/user');
 const dbService = require('../utils/dbService');
 const userTokens = require('../model/userTokens');
 const {
-  JWT,LOGIN_ACCESS,
-  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME,FORGOT_PASSWORD_WITH
+  JWT, LOGIN_ACCESS,
+  PLATFORM, MAX_LOGIN_RETRY_LIMIT, LOGIN_REACTIVE_TIME, FORGOT_PASSWORD_WITH
 } = require('../constants/authConstant');
 const jwt = require('jsonwebtoken');
 const common = require('../utils/common');
@@ -25,10 +25,10 @@ const uuid = require('uuid').v4;
  * @param {string} secret : secret for JWT.
  * @return {string}  : returns JWT token.
  */
-const generateToken = async (user,secret) => {
-  return jwt.sign( {
-    id:user.id,
-    'username':user.username
+const generateToken = async (user, secret) => {
+  return jwt.sign({
+    id: user.id,
+    'username': user.username
   }, secret, { expiresIn: JWT.EXPIRES_IN * 60 });
 };
 
@@ -40,135 +40,136 @@ const generateToken = async (user,secret) => {
  * @param {boolean} roleAccess: a flag to request user`s role access
  * @return {Object} : returns authentication status. {flag, data}
  */
-const loginUser = async (username,password,platform,roleAccess) => {
+const loginUser = async (username, password, platform, roleAccess) => {
   try {
-    let where = { $or:[{ username:username },{ email:username }] };
-    where.isActive =  true;where.isDeleted = false;            let user = await dbService.findOne(User,where);
+    let where = { $or: [{ username: username }, { email: username }] };
+    where.isActive = true; where.isDeleted = false; let user = await dbService.findOne(User, where);
+    console.log({ username, user });
     if (user) {
-      if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT){
+      if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT) {
         let now = dayjs();
-        if (user.loginReactiveTime){
+        if (user.loginReactiveTime) {
           let limitTime = dayjs(user.loginReactiveTime);
-          if (limitTime > now){
-            let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
-            if (!(limitTime > expireTime)){
+          if (limitTime > now) {
+            let expireTime = dayjs().add(LOGIN_REACTIVE_TIME, 'minute');
+            if (!(limitTime > expireTime)) {
               return {
-                flag:true,
-                data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,limitTime)}.`
-              }; 
-            }   
-            await dbService.updateOne(User,{ _id:user.id },{
-              loginReactiveTime:expireTime.toISOString(),
-              loginRetryLimit:user.loginRetryLimit + 1  
+                flag: true,
+                data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, limitTime)}.`
+              };
+            }
+            await dbService.updateOne(User, { _id: user.id }, {
+              loginReactiveTime: expireTime.toISOString(),
+              loginRetryLimit: user.loginRetryLimit + 1
             });
             return {
-              flag:true,
-              data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,expireTime)}.`
-            }; 
+              flag: true,
+              data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, expireTime)}.`
+            };
           } else {
-            user = await dbService.updateOne(User,{ _id:user.id },{
-              loginReactiveTime:'',
-              loginRetryLimit:0
-            },{ new:true });
+            user = await dbService.updateOne(User, { _id: user.id }, {
+              loginReactiveTime: '',
+              loginRetryLimit: 0
+            }, { new: true });
           }
         } else {
           // send error
-          let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
+          let expireTime = dayjs().add(LOGIN_REACTIVE_TIME, 'minute');
           await dbService.updateOne(User,
             {
-              _id:user.id,
-              isActive :true,
-              isDeleted :false
+              _id: user.id,
+              isActive: true,
+              isDeleted: false
             },
             {
-              loginReactiveTime:expireTime.toISOString(),
-              loginRetryLimit:user.loginRetryLimit + 1 
+              loginReactiveTime: expireTime.toISOString(),
+              loginRetryLimit: user.loginRetryLimit + 1
             });
           return {
-            flag:true,
-            data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,expireTime)}.`
-          }; 
-        } 
+            flag: true,
+            data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, expireTime)}.`
+          };
+        }
       }
-      if (password){
+      if (password) {
         const isPasswordMatched = await user.isPasswordMatch(password);
         if (!isPasswordMatched) {
           await dbService.updateOne(User,
             {
-              _id:user.id,
-              isActive :true,
-              isDeleted : false
+              _id: user.id,
+              isActive: true,
+              isDeleted: false
             },
-            { loginRetryLimit:user.loginRetryLimit + 1 });
+            { loginRetryLimit: user.loginRetryLimit + 1 });
           return {
-            flag:true,
-            data:'Incorrect Password'
+            flag: true,
+            data: 'Incorrect Password'
           };
         }
       }
       const userData = user.toJSON();
       let token;
-      if (!user.userType){
+      if (!user.userType) {
         return {
-          flag:true,
-          data:'You have not been assigned any role'
+          flag: true,
+          data: 'You have not been assigned any role'
         };
       }
-      if (platform == PLATFORM.ADMIN){
-        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.ADMIN)){
+      if (platform == PLATFORM.ADMIN) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.ADMIN)) {
           return {
-            flag:true,
-            data:'you are unable to access this platform'
+            flag: true,
+            data: 'you are unable to access this platform'
           };
         }
-        token = await generateToken(userData,JWT.ADMIN_SECRET);
+        token = await generateToken(userData, JWT.ADMIN_SECRET);
       }
-      else if (platform == PLATFORM.DEVICE){
-        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.DEVICE)){
+      else if (platform == PLATFORM.DEVICE) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.DEVICE)) {
           return {
-            flag:true,
-            data:'you are unable to access this platform'
+            flag: true,
+            data: 'you are unable to access this platform'
           };
         }
-        token = await generateToken(userData,JWT.DEVICE_SECRET);
+        token = await generateToken(userData, JWT.DEVICE_SECRET);
       }
-      else if (platform == PLATFORM.CLIENT){
-        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.CLIENT)){
+      else if (platform == PLATFORM.CLIENT) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.CLIENT)) {
           return {
-            flag:true,
-            data:'you are unable to access this platform'
+            flag: true,
+            data: 'you are unable to access this platform'
           };
         }
-        token = await generateToken(userData,JWT.CLIENT_SECRET);
+        token = await generateToken(userData, JWT.CLIENT_SECRET);
       }
-      if (user.loginRetryLimit){
-        await dbService.updateOne(User,{ _id:user.id },{
-          loginRetryLimit:0,
-          loginReactiveTime:''
+      if (user.loginRetryLimit) {
+        await dbService.updateOne(User, { _id: user.id }, {
+          loginRetryLimit: 0,
+          loginReactiveTime: ''
         });
       }
       let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
       await dbService.create(userTokens, {
         userId: user.id,
         token: token,
-        tokenExpiredTime: expire 
+        tokenExpiredTime: expire
       });
       let userToReturn = {
         ...userData,
-        token 
+        token
       };
-      if (roleAccess){
+      if (roleAccess) {
         userToReturn.roleAccess = await common.getRoleAccessData(user.id);
       }
       return {
-        flag:false,
-        data:userToReturn
+        flag: false,
+        data: userToReturn
       };
-            
+
     } else {
       return {
-        flag:true,
-        data:'User not exists'
+        flag: true,
+        data: 'User not exists'
       };
     }
   } catch (error) {
@@ -181,40 +182,40 @@ const loginUser = async (username,password,platform,roleAccess) => {
  * @param {Object} params : object of new password, old password and user`s id.
  * @return {Object}  : returns status of change password. {flag,data}
  */
-const changePassword = async (params)=>{
+const changePassword = async (params) => {
   try {
     let password = params.newPassword;
     let oldPassword = params.oldPassword;
-    let where = { 
-      _id:params.userId,
+    let where = {
+      _id: params.userId,
       isActive: true,
-      isDeleted: false,        
+      isDeleted: false,
     };
-    let user = await dbService.findOne(User,where);
+    let user = await dbService.findOne(User, where);
     if (user && user.id) {
       let isPasswordMatch = await user.isPasswordMatch(oldPassword);
-      if (!isPasswordMatch){
+      if (!isPasswordMatch) {
         return {
-          flag:true,
-          data:'Incorrect old password'
+          flag: true,
+          data: 'Incorrect old password'
         };
       }
       password = await bcrypt.hash(password, 8);
-      let updatedUser = dbService.updateOne(User,where,{ 'password':password });
+      let updatedUser = dbService.updateOne(User, where, { 'password': password });
       if (updatedUser) {
         return {
-          flag:false,
-          data:'Password changed successfully'
-        };                
+          flag: false,
+          data: 'Password changed successfully'
+        };
       }
       return {
-        flag:true,
-        data:'password can not changed due to some error.please try again'
+        flag: true,
+        data: 'password can not changed due to some error.please try again'
       };
     }
     return {
-      flag:true,
-      data:'User not found'
+      flag: true,
+      data: 'User not found'
     };
   } catch (error) {
     throw new Error(error.message);
@@ -230,28 +231,28 @@ const sendResetPasswordNotification = async (user) => {
   let resultOfEmail = false;
   let resultOfSMS = false;
   try {
-    let where = { 
-      _id:user.id,
+    let where = {
+      _id: user.id,
       isActive: true,
-      isDeleted: false,        
+      isDeleted: false,
     };
     let token = uuid();
     let expires = dayjs();
     expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, 'minute').toISOString();
-    await dbService.updateOne(User,where,
+    await dbService.updateOne(User, where,
       {
         resetPasswordLink: {
           code: token,
-          expireTime: expires 
-        } 
+          expireTime: expires
+        }
       });
-    if (FORGOT_PASSWORD_WITH.LINK.email){
-      let updatedUser = await dbService.findOne(User,where);
-      let mailObj = { 
+    if (FORGOT_PASSWORD_WITH.LINK.email) {
+      let updatedUser = await dbService.findOne(User, where);
+      let mailObj = {
         subject: 'Reset Password',
         to: user.email,
-        template: '/views/email/ResetPassword',
-        data:updatedUser
+        template: '/views/requestResetPassword.handlebars',
+        data: updatedUser
       };
       try {
         await emailService.sendMail(mailObj);
@@ -260,21 +261,21 @@ const sendResetPasswordNotification = async (user) => {
         console.log(error);
       }
     }
-    if (FORGOT_PASSWORD_WITH.LINK.sms){
-      let viewType = '/reset-password/';
-      let link = `http://localhost:${process.env.PORT}${viewType + token}`;
-      const msg = await ejs.renderFile(`${__basedir}/views/sms/ResetPassword/html.ejs`, { link : link });
-      let smsObj = {
-        to:user.mobileNo,
-        message:msg
-      };
-      try {
-        await smsService.sendSMS(smsObj);
-        resultOfSMS = true;
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    // if (FORGOT_PASSWORD_WITH.LINK.sms) {
+    //   let viewType = '/reset-password/';
+    //   let link = `http://localhost:${process.env.PORT}${viewType + token}`;
+    //   const msg = await ejs.renderFile(`${__basedir}/views/sms/ResetPassword/html.ejs`, { link: link });
+    //   let smsObj = {
+    //     to: user.mobileNo,
+    //     message: msg
+    //   };
+    //   try {
+    //     await smsService.sendSMS(smsObj);
+    //     resultOfSMS = true;
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
     return {
       resultOfEmail,
       resultOfSMS
@@ -292,12 +293,12 @@ const sendResetPasswordNotification = async (user) => {
  */
 const resetPassword = async (user, newPassword) => {
   try {
-    let where = { 
-      _id:user.id,
+    let where = {
+      _id: user.id,
       isActive: true,
-      isDeleted: false,        
+      isDeleted: false,
     };
-    const dbUser = await dbService.findOne(User,where);
+    const dbUser = await dbService.findOne(User, where);
     if (!dbUser) {
       return {
         flag: true,
@@ -308,7 +309,7 @@ const resetPassword = async (user, newPassword) => {
     await dbService.updateOne(User, where, {
       'password': newPassword,
       resetPasswordLink: null,
-      loginRetryLimit:0
+      loginRetryLimit: 0
     });
     let mailObj = {
       subject: 'Reset Password',
@@ -336,24 +337,24 @@ const resetPassword = async (user, newPassword) => {
  * @param {platform} platform : platform that user wants to access.
  * @return {boolean}  : returns status whether SMS is sent or not.
  */
-const socialLogin = async (email,platform) => {
+const socialLogin = async (email, platform) => {
   try {
-    const user = await dbService.findOne(User,{ email });
+    const user = await dbService.findOne(User, { email });
     if (user && user.email) {
       const { ...userData } = user.toJSON();
       if (!user.userType) {
         return {
-          flag:true,
-          data:'You have not been assigned any role'
+          flag: true,
+          data: 'You have not been assigned any role'
         };
       }
-      if (platform === undefined){
+      if (platform === undefined) {
         return {
-          flag:true,
-          data:'Please login through Platform'
+          flag: true,
+          data: 'Please login through Platform'
         };
       }
-      if (!PLATFORM[platform.toUpperCase()] || !JWT[`${platform.toUpperCase()}_SECRET`]){
+      if (!PLATFORM[platform.toUpperCase()] || !JWT[`${platform.toUpperCase()}_SECRET`]) {
         return {
           flag: true,
           data: 'Platform not exists'
@@ -370,21 +371,21 @@ const socialLogin = async (email,platform) => {
       await dbService.create(userTokens, {
         userId: user.id,
         token: token,
-        tokenExpiredTime: expire 
+        tokenExpiredTime: expire
       });
       const userToReturn = {
         ...userData,
-        token 
+        token
       };
       return {
-        flag:false,
-        data:userToReturn
+        flag: false,
+        data: userToReturn
       };
     }
     else {
       return {
-        flag:true,
-        data:'User/Email not exists'
+        flag: true,
+        data: 'User/Email not exists'
       };
     }
   } catch (error) {
@@ -423,7 +424,7 @@ const sendPasswordByEmail = async (user) => {
       subject: 'Your Password!',
       to: user.email,
       template: '/views/email/InitialPassword',
-      data: { message:msg }
+      data: { message: msg }
     };
     try {
       await emailService.sendMail(mailObj);

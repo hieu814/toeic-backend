@@ -20,7 +20,9 @@
     "express-rate-limit": "~5.2.6",
     "express-session": "~1.17.1",
     "extract-zip": "~2.0.1",
+    "firebase-admin": "^11.5.0",
     "formidable": "~2.0.1",
+    "handlebars": "^4.7.7",
     "joi": "~17.3.0",
     "jsonwebtoken": "~8.5.1",
     "mongoose": "~6.2.5",
@@ -43,8 +45,8 @@
   "devDependencies": {
     "eslint": "~8.10.0",
     "eslint-plugin-import": "~2.25.4",
-    "nodemon": "^2.0.18",
     "jest": "~27.0.6",
+    "nodemon": "^2.0.18",
     "supertest": "~6.1.3"
   }
 }
