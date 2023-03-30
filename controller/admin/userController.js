@@ -52,7 +52,7 @@ const addUser = async (req, res) => {
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new User(dataToCreate);
-    let createdUser = await dbService.create(User,dataToCreate);
+    let createdUser = await dbService.createUniqe(User,dataToCreate,['email']);
     return res.success({ data : createdUser });
   } catch (error) {
     return res.internalServerError({ message:error.message }); 

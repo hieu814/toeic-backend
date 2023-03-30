@@ -28,7 +28,7 @@ const addExam_category = async (req, res) => {
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new Exam_category(dataToCreate);
-    let createdExam_category = await dbService.create(Exam_category,dataToCreate);
+    let createdExam_category = await dbService.createUniqe(Exam_category, dataToCreate, ["name"]);
     return res.success({ data : createdExam_category });
   } catch (error) {
     return res.internalServerError({ message:error.message }); 

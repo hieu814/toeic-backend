@@ -27,7 +27,7 @@ const addWord_category = async (req, res) => {
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new Word_category(dataToCreate);
-    let createdWord_category = await dbService.create(Word_category, dataToCreate);
+    let createdWord_category =  await dbService.createUniqe(Word_category, dataToCreate, ["name"]);
     return res.success({ data: createdWord_category });
   } catch (error) {
     return res.internalServerError({ message: error.message });

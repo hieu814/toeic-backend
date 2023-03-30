@@ -30,7 +30,7 @@ const addExam = async (req, res) => {
     // dataToCreate.image = "sdaasdasda"
     dataToCreate = new Exam(dataToCreate);
     console.log({ data: dataToCreate });
-    let createdExam = await dbService.create(Exam, dataToCreate);
+    let createdExam =  await dbService.createUniqe(Exam, dataToCreate, ["name"]);
 
     console.log(createdExam);
     return res.success({ data: createdExam });

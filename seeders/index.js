@@ -26,7 +26,7 @@ async function seedUser() {
       'userType': authConstant.USER_TYPES.User
     };
     userToBeInserted.password = await bcrypt.hash(userToBeInserted.password, 8);
-    let user = await dbService.updateOne(User, { 'username': 'Admin' }, userToBeInserted, { upsert: true });
+    let user = await dbService.updateOne(User, { 'username': 'User' }, userToBeInserted, { upsert: true });
     userToBeInserted = {
 
       'password': 'Admin@1234',

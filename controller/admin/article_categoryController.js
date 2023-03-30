@@ -28,7 +28,7 @@ const addArticle_category = async (req, res) => {
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new Article_category(dataToCreate);
-    let createdArticle_category = await dbService.create(Article_category, dataToCreate);
+    let createdArticle_category = await dbService.createUniqe(Article_category, dataToCreate, ["name"]);
     return res.success({ data: createdArticle_category });
   } catch (error) {
     return res.internalServerError({ message: error.message });

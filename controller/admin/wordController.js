@@ -53,7 +53,7 @@ const bulkInsertWord = async (req, res) => {
       };
     }
     // console.log(dataToCreate);
-    let createdWords = await dbService.create2(Word, dataToCreate, { filter: "name" });
+    let createdWords = await dbService.createOrUpdate(Word, dataToCreate, { filter: "name" });
     console.log("add ok ", createdWords.length);
     return res.success({
       data: createdWords || [],

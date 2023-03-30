@@ -27,7 +27,7 @@ const addArticle = async (req, res) => {
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new Article(dataToCreate);
-    let createdArticle = await dbService.create(Article,dataToCreate);
+    let createdArticle =await dbService.createUniqe(Article, dataToCreate, ["name"]);
     return res.success({ data : createdArticle });
   } catch (error) {
     return res.internalServerError({ message:error.message }); 

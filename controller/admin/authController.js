@@ -111,9 +111,9 @@ const forgotPassword = async (req, res) => {
     if (!found) {
       return res.recordNotFound();
     }
-    let {
-      resultOfEmail, resultOfSMS
-    } = await authService.sendResetPasswordNotification(found);
+    // let {
+    //   resultOfEmail, resultOfSMS
+    // } = await authService.sendResetPasswordNotification(found);
     if (resultOfEmail && resultOfSMS) {
       return res.success({ message: 'otp successfully send.' });
     } else if (resultOfEmail && !resultOfSMS) {

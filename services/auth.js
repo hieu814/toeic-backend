@@ -42,7 +42,7 @@ const generateToken = async (user, secret) => {
  */
 const loginUser = async (username, password, platform, roleAccess) => {
   try {
-    let where = { $or: [{ username: username }, { email: username }] };
+    let where = { $or: [{ email: username }] };
     where.isActive = true; where.isDeleted = false; let user = await dbService.findOne(User, where);
     console.log({ username, user });
     if (user) {
@@ -251,7 +251,7 @@ const sendResetPasswordNotification = async (user) => {
       let mailObj = {
         subject: 'Reset Password',
         to: user.email,
-        template: '/views/requestResetPassword.handlebars',
+        template: './views/requestResetPassword.handlebars',
         data: updatedUser
       };
       try {

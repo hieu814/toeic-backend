@@ -73,6 +73,7 @@ const login = async (req,res)=>{
     let {
       username,password
     } = req.body;
+    console.log( req.body);
     if (!username || !password){
       return res.badRequest({ message : 'Insufficient request parameters! username and password is required.' });
     }

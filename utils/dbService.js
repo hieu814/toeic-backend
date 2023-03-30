@@ -5,7 +5,28 @@ const create = (model, data) => new Promise((resolve, reject) => {
     else resolve(result);
   });
 });
-const create2 = (model, data, query) => new Promise((resolve, reject) => {
+const createUniqe = (model, data, keys = []) => new Promise((resolve, reject) => {
+  var filter = { $or: [] };
+  (keys || []).forEach(key => {
+    let obj = {}
+    obj[key] = data[key]
+    filter.$or.push(obj)
+  });
+  console.log(filter);
+  model.findOne(filter, (error, result) => {
+    if (error) reject(error);
+    else if (result) {
+      reject({ message: `${keys} exists!` })
+    } else {
+      model.create(data, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    }
+  });
+
+});
+const createOrUpdate = (model, data, query) => new Promise((resolve, reject) => {
   const uniqueDocs = data.reduce((acc, doc) => {
     const existingDoc = acc.find((d) => d[query.filter] === doc[query.filter]);
     if (!existingDoc) {
@@ -144,5 +165,6 @@ module.exports = {
   count,
   paginate,
   createWithUpsert,
-  create2
+  createOrUpdate,
+  createUniqe
 };
