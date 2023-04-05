@@ -17,7 +17,7 @@ exports.schemaKeys = joi.object({
   images: joi.array().items(),
   redirectLink: joi.string().allow(null).allow(''),
   isActive: joi.boolean(),
-  sellerId: joi.string().regex(/^[0-9a-fA-F]{24}$/).allow(null).allow(''),
+  aricleId: joi.string().regex(/^[0-9a-fA-F]{24}$/).allow(null).allow(''),
   isDeleted: joi.boolean()
 }).unknown(true);
 
@@ -30,7 +30,7 @@ exports.updateSchemaKeys = joi.object({
   images: joi.array().items(),
   redirectLink: joi.string().allow(null).allow(''),
   isActive: joi.boolean(),
-  sellerId: joi.string().regex(/^[0-9a-fA-F]{24}$/).allow(null).allow(''),
+  aricleId: joi.string().regex(/^[0-9a-fA-F]{24}$/).allow(null).allow(''),
   isDeleted: joi.boolean(),
   _id: joi.string().regex(/^[0-9a-fA-F]{24}$/)
 }).unknown(true);
@@ -48,7 +48,7 @@ exports.findFilterKeys = joi.object({
       images: joi.alternatives().try(joi.array().items(),joi.array().items(),joi.object()),
       redirectLink: joi.alternatives().try(joi.array().items(),joi.string(),joi.object()),
       isActive: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
-      sellerId: joi.alternatives().try(joi.array().items(),joi.string().regex(/^[0-9a-fA-F]{24}$/),joi.object()),
+      aricleId: joi.alternatives().try(joi.array().items(),joi.string().regex(/^[0-9a-fA-F]{24}$/),joi.object()),
       isDeleted: joi.alternatives().try(joi.array().items(),joi.boolean(),joi.object()),
       id: joi.any(),
       _id: joi.alternatives().try(joi.array().items(),joi.string().regex(/^[0-9a-fA-F]{24}$/),joi.object())

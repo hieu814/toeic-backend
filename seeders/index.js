@@ -46,7 +46,7 @@ async function seedUser() {
 /* seeds roles */
 async function seedRole() {
   try {
-    const roles = ['Admin', 'Seller', 'System_User', 'Customer'];
+    const roles = ['Admin','System_User'];
     const insertedRoles = await dbService.findMany(Role, { code: { '$in': roles.map(role => role.toUpperCase()) } });
     const rolesToInsert = [];
     roles.forEach(role => {

@@ -5,7 +5,7 @@
 
 const passport = require('passport');
 const {
-  LOGIN_ACCESS,PLATFORM 
+  LOGIN_ACCESS, PLATFORM
 } = require('../constants/authConstant');
 const userTokens = require('../model/userTokens');
 const dbService = require('../utils/dbService');
@@ -25,14 +25,15 @@ const verifyCallback = (req, resolve, reject, platform) => async (error, user, i
   if (!user.isActive) {
     return reject('User is deactivated');
   }
-  let userToken = await dbService.findOne(userTokens,{
-    token:(req.headers.authorization).replace('Bearer ',''),
-    userId:user.id
+  let userToken = await dbService.findOne(userTokens, {
+    token: (req.headers.authorization).replace('Bearer ', ''),
+    userId: user.id
   });
-  if (!userToken){
+  console.log({userToken});
+  if (!userToken) {
     return reject('Token not found');
   }
-  if (userToken.isTokenExpired){
+  if (userToken.isTokenExpired) {
     return reject('Token is Expired');
   }
   if (user.userType) {
@@ -53,7 +54,7 @@ const verifyCallback = (req, resolve, reject, platform) => async (error, user, i
  */
 const auth = (platform) => async (req, res, next) => {
 
-  if (platform == PLATFORM.ADMIN){
+  if (platform == PLATFORM.ADMIN) {
     return new Promise((resolve, reject) => {
       passport.authenticate('admin-rule', { session: false }, verifyCallback(req, resolve, reject, platform))(
         req,
@@ -63,10 +64,11 @@ const auth = (platform) => async (req, res, next) => {
     })
       .then(() => next())
       .catch((error) => {
-        return res.unAuthorized({ message:error.message });
+        return res.unAuthorized({ message: error.message });
       });
   }
-  else if (platform == PLATFORM.DEVICE){
+  else if (platform == PLATFORM.DEVICE) {
+    console.log("PLATFORM.DEVICE");
     return new Promise((resolve, reject) => {
       passport.authenticate('device-rule', { session: false }, verifyCallback(req, resolve, reject, platform))(
         req,
@@ -76,10 +78,11 @@ const auth = (platform) => async (req, res, next) => {
     })
       .then(() => next())
       .catch((error) => {
-        return res.unAuthorized({ message:error.message });
+        console.log({error});
+        return res.unAuthorized({ message: error.message });
       });
   }
-  else if (platform == PLATFORM.CLIENT){
+  else if (platform == PLATFORM.CLIENT) {
     return new Promise((resolve, reject) => {
       passport.authenticate('client-rule', { session: false }, verifyCallback(req, resolve, reject, platform))(
         req,
@@ -89,7 +92,7 @@ const auth = (platform) => async (req, res, next) => {
     })
       .then(() => next())
       .catch((error) => {
-        return res.unAuthorized({ message:error.message });
+        return res.unAuthorized({ message: error.message });
       });
   }
 };

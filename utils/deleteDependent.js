@@ -154,7 +154,7 @@ const deleteUser = async (filter) =>{
       const categoryFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const categoryCnt = await dbService.deleteMany(Category,categoryFilter);
 
-      const bannerFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } },{ sellerId : { $in : user } }] };
+      const bannerFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } },{ aricleId : { $in : user } }] };
       const bannerCnt = await dbService.deleteMany(Banner,bannerFilter);
 
       const userTokensFilter = { $or: [{ userId : { $in : user } },{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
@@ -443,7 +443,7 @@ const countUser = async (filter) =>{
       const categoryFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
       const categoryCnt =  await dbService.count(Category,categoryFilter);
 
-      const bannerFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } },{ sellerId : { $in : user } }] };
+      const bannerFilter = { $or: [{ addedBy : { $in : user } },{ updatedBy : { $in : user } },{ aricleId : { $in : user } }] };
       const bannerCnt =  await dbService.count(Banner,bannerFilter);
 
       const userTokensFilter = { $or: [{ userId : { $in : user } },{ addedBy : { $in : user } },{ updatedBy : { $in : user } }] };
@@ -726,7 +726,7 @@ const softDeleteUser = async (filter,updateBody) =>{
       const categoryFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } }] };
       const categoryCnt = await dbService.updateMany(Category,categoryFilter,updateBody);
 
-      const bannerFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } },{ sellerId : { '$in' : user } }] };
+      const bannerFilter = { '$or': [{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } },{ aricleId : { '$in' : user } }] };
       const bannerCnt = await dbService.updateMany(Banner,bannerFilter,updateBody);
 
       const userTokensFilter = { '$or': [{ userId : { '$in' : user } },{ addedBy : { '$in' : user } },{ updatedBy : { '$in' : user } }] };

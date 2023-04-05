@@ -50,7 +50,7 @@ const schema = new Schema(
       ref:'user'
     },
 
-    sellerId:{
+    aricleId:{
       type:Schema.Types.ObjectId,
       ref:'user'
     },

@@ -31,7 +31,11 @@ const generateToken = async (user, secret) => {
     'username': user.username
   }, secret, { expiresIn: JWT.EXPIRES_IN * 60 });
 };
-
+const generateAccessToken = async (token, secret) => {
+  return jwt.sign({
+    accessToken: token
+  }, secret, { expiresIn: JWT.EXPIRES_IN * 60 });
+};
 /**
  * @description : login user.
  * @param {string} username : username of user.
@@ -176,7 +180,37 @@ const loginUser = async (username, password, platform, roleAccess) => {
     throw new Error(error.message);
   }
 };
+const loginWithAccessToken = async (platform, accessToken) => {
+  try {
 
+    var token;
+    console.log({ login: accessToken });
+    if (platform == PLATFORM.ADMIN) {
+
+      token = await generateAccessToken(accessToken, JWT.ADMIN_SECRET);
+    }
+    else if (platform == PLATFORM.DEVICE) {
+
+      token = await generateAccessToken(accessToken, JWT.DEVICE_SECRET);
+    }
+    else if (platform == PLATFORM.CLIENT) {
+
+      token = await generateAccessToken(accessToken, JWT.CLIENT_SECRET);
+    }
+    let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+    await dbService.create(userTokens, {
+      // userId: user.id,
+      token: token,
+      tokenExpiredTime: expire
+    });
+    return {
+      flag: false,
+      data: { token }
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 /**
  * @description : change password.
  * @param {Object} params : object of new password, old password and user`s id.
@@ -446,5 +480,7 @@ module.exports = {
   resetPassword,
   socialLogin,
   sendPasswordBySMS,
-  sendPasswordByEmail
+  sendPasswordByEmail,
+  loginWithAccessToken,
+  generateAccessToken
 };
