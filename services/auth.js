@@ -18,7 +18,7 @@ const emailService = require('./email');
 const smsService = require('./sms');
 const ejs = require('ejs');
 const uuid = require('uuid').v4;
-
+const admin = require('firebase-admin');
 /**
  * @description : generate JWT token for authentication.
  * @param {Object} user : user who wants to login.
@@ -48,7 +48,6 @@ const loginUser = async (username, password, platform, roleAccess) => {
   try {
     let where = { $or: [{ email: username }] };
     where.isActive = true; where.isDeleted = false; let user = await dbService.findOne(User, where);
-    console.log({ username, user });
     if (user) {
       if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT) {
         let now = dayjs();
@@ -180,33 +179,140 @@ const loginUser = async (username, password, platform, roleAccess) => {
     throw new Error(error.message);
   }
 };
-const loginWithAccessToken = async (platform, accessToken) => {
+
+/**
+ * @description : login with fireabse Id token.
+ * @param {string} idtoken : username of user.
+ * @param {string} platform : platform.
+ * @param {boolean} roleAccess: a flag to request user`s role access
+ * @return {Object} : returns authentication status. {flag, data}
+ */
+const loginWithAccessToken = async (platform, idtoken, roleAccess) => {
   try {
-
-    var token;
-    console.log({ login: accessToken });
-    if (platform == PLATFORM.ADMIN) {
-
-      token = await generateAccessToken(accessToken, JWT.ADMIN_SECRET);
-    }
-    else if (platform == PLATFORM.DEVICE) {
-
-      token = await generateAccessToken(accessToken, JWT.DEVICE_SECRET);
-    }
-    else if (platform == PLATFORM.CLIENT) {
-
-      token = await generateAccessToken(accessToken, JWT.CLIENT_SECRET);
-    }
-    let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-    await dbService.create(userTokens, {
-      // userId: user.id,
-      token: token,
-      tokenExpiredTime: expire
-    });
-    return {
-      flag: false,
-      data: { token }
+    const decodedToken = await admin.auth().verifyIdToken(idtoken);
+    const userRecord = await admin.auth().getUser(decodedToken.uid);
+    const _user = {
+      id: userRecord.uid,
+      email: userRecord.email,
+      isActive: userRecord.disabled == false,
+      // userType: USER_TYPES.User
+      name: userRecord.displayName,
+      avatar: userRecord.photoURL
     };
+    let user = await dbService.updateOne(User, { 'email': userRecord.email }, _user, { upsert: true });
+
+    // console.log({ registerUser: user });
+    if (user) {
+      if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT) {
+        let now = dayjs();
+        if (user.loginReactiveTime) {
+          let limitTime = dayjs(user.loginReactiveTime);
+          if (limitTime > now) {
+            let expireTime = dayjs().add(LOGIN_REACTIVE_TIME, 'minute');
+            if (!(limitTime > expireTime)) {
+              return {
+                flag: true,
+                data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, limitTime)}.`
+              };
+            }
+            await dbService.updateOne(User, { _id: user.id }, {
+              loginReactiveTime: expireTime.toISOString(),
+              loginRetryLimit: user.loginRetryLimit + 1
+            });
+            return {
+              flag: true,
+              data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, expireTime)}.`
+            };
+          } else {
+            user = await dbService.updateOne(User, { _id: user.id }, {
+              loginReactiveTime: '',
+              loginRetryLimit: 0
+            }, { new: true });
+          }
+        } else {
+          // send error
+          let expireTime = dayjs().add(LOGIN_REACTIVE_TIME, 'minute');
+          await dbService.updateOne(User,
+            {
+              _id: user.id,
+              isActive: true,
+              isDeleted: false
+            },
+            {
+              loginReactiveTime: expireTime.toISOString(),
+              loginRetryLimit: user.loginRetryLimit + 1
+            });
+          return {
+            flag: true,
+            data: `you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now, expireTime)}.`
+          };
+        }
+      }
+      const userData = user.toJSON();
+      let token;
+      if (!user.userType) {
+        return {
+          flag: true,
+          data: 'You have not been assigned any role'
+        };
+      }
+      if (platform == PLATFORM.ADMIN) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.ADMIN)) {
+          return {
+            flag: true,
+            data: 'you are unable to access this platform'
+          };
+        }
+        token = await generateToken(userData, JWT.ADMIN_SECRET);
+      }
+      else if (platform == PLATFORM.DEVICE) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.DEVICE)) {
+          return {
+            flag: true,
+            data: 'you are unable to access this platform'
+          };
+        }
+        token = await generateToken(userData, JWT.DEVICE_SECRET);
+      }
+      else if (platform == PLATFORM.CLIENT) {
+        if (!LOGIN_ACCESS[user.userType].includes(PLATFORM.CLIENT)) {
+          return {
+            flag: true,
+            data: 'you are unable to access this platform'
+          };
+        }
+        token = await generateToken(userData, JWT.CLIENT_SECRET);
+      }
+      if (user.loginRetryLimit) {
+        await dbService.updateOne(User, { _id: user.id }, {
+          loginRetryLimit: 0,
+          loginReactiveTime: ''
+        });
+      }
+      let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+      await dbService.create(userTokens, {
+        userId: user.id,
+        token: token,
+        tokenExpiredTime: expire
+      });
+      let userToReturn = {
+        ...userData,
+        token
+      };
+      if (roleAccess) {
+        userToReturn.roleAccess = await common.getRoleAccessData(user.id);
+      }
+      return {
+        flag: false,
+        data: userToReturn
+      };
+
+    } else {
+      return {
+        flag: true,
+        data: 'User not exists'
+      };
+    }
   } catch (error) {
     throw new Error(error.message);
   }

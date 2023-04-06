@@ -25,14 +25,14 @@ function vertifyAccessToken(idToken) {
     return promise
 
 }
-admin.auth().listUsers()
-    .then((userRecords) => {
-        console.log(userRecords);
-        userRecords.forEach((user) => {
-            console.log(user.toJSON());
-        });
-    })
-    .catch((error) => {
-        console.log('Error fetching users:', error);
-    });
+// admin.auth().listUsers()
+//     .then((userRecords) => {
+//         console.log(userRecords);
+//         userRecords.forEach((user) => {
+//             console.log(user.toJSON());
+//         });
+//     })
+//     .catch((error) => {
+//         console.log('Error fetching users:', error);
+//     });
 module.exports = { admin, vertifyAccessToken }

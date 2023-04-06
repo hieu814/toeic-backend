@@ -23,6 +23,8 @@ const schema = new Schema(
   {
 
     name:{ type:String },
+    
+    type: { type: Number },
 
     description:{ type:String },
 

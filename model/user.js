@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 const { USER_TYPES } = require('../constants/authConstant');
 const { convertObjectToEnum } = require('../utils/common');
 const authConstantEnum = require('../constants/authConstant');
-        
+
 const myCustomLabels = {
   totalDocs: 'itemCount',
   docs: 'data',
@@ -27,102 +27,89 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
   {
 
-    username:{ type:String },
+    username: { type: String },
 
-    password:{ type:String },
+    password: { type: String },
 
-    email:{ type:String },
+    email: { type: String },
 
-    name:{ type:String },
+    name: { type: String },
 
-    isActive:{ type:Boolean },
+    gender: { type: String },
 
-    createdAt:{ type:Date },
+    phone: { type: String },
 
-    updatedAt:{ type:Date },
+    intro: { type: String },
 
-    addedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    mobileNo: { type: String },
+
+    avatar: { type: String },
+
+    isDeleted: { type: Boolean },
+
+    isActive: { type: Boolean },
+
+    createdAt: { type: Date },
+
+    updatedAt: { type: Date },
+
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    updatedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    TestResult:[{
-      _id:false,
-      pincode:{ type:String },
-      address1:{ type:String },
-      address2:{ type:String },
-      landmark:{ type:String },
-      city:{ type:String },
-      isDefault:{ type:Boolean },
-      state:{ type:String },
-      addressType:{ type:String },
-      fullName:{ type:String },
-      mobile:{ type:Number },
-      addressNo:{ type:Number }
-    }],
-
-    ScoreStatistics:{
-      TotalListeningScore:{ type:String },
-      TotalReadingScore:{ type:String },
-      TestCount:{ type:Number }
+    scoreStatistics: {
+      TotalListeningScore: { type: String },
+      TotalReadingScore: { type: String },
+      TestCount: { type: Number }
     },
 
-    userType:{
-      type:Number,
-      enum:convertObjectToEnum(USER_TYPES),
-      required:true
+    userType: {
+      type: Number,
+      enum: convertObjectToEnum(USER_TYPES),
+      required: true,
+      default: USER_TYPES.User
+    },
+    resetPasswordLink: {
+      code: String,
+      expireTime: Date
     },
 
-    gender:{ type:String },
-
-    phone:{ type:String },
-
-    intro:{ type:String },
-
-    mobileNo:{ type:String },
-
-    isDeleted:{ type:Boolean },
-
-    resetPasswordLink:{
-      code:String,
-      expireTime:Date
+    loginRetryLimit: {
+      type: Number,
+      default: 0
     },
 
-    loginRetryLimit:{
-      type:Number,
-      default:0
-    },
+    loginReactiveTime: { type: Date },
 
-    loginReactiveTime:{ type:Date },
-
-    ssoAuth:{
-      googleId:{ type:String },
-      facebookId:{ type:String }
+    ssoAuth: {
+      googleId: { type: String },
+      facebookId: { type: String }
     }
   }
-  ,{ 
-    timestamps: { 
-      createdAt: 'createdAt', 
-      updatedAt: 'updatedAt' 
-    } 
+  , {
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    }
   }
 );
 schema.pre('save', async function (next) {
   this.isDeleted = false;
   this.isActive = true;
-  if (this.password){
+  if (this.password) {
     this.password = await bcrypt.hash(this.password, 8);
   }
   next();
 });
 
 schema.pre('insertMany', async function (next, docs) {
-  if (docs && docs.length){
+  if (docs && docs.length) {
     for (let index = 0; index < docs.length; index++) {
       const element = docs[index];
       element.isDeleted = false;
@@ -138,14 +125,14 @@ schema.methods.isPasswordMatch = async function (password) {
 };
 schema.method('toJSON', function () {
   const {
-    _id, __v, ...object 
-  } = this.toObject({ virtuals:true });
+    _id, __v, ...object
+  } = this.toObject({ virtuals: true });
   object.id = _id;
   delete object.password;
-     
+
   return object;
 });
 schema.plugin(mongoosePaginate);
 schema.plugin(idValidator);
-const user = mongoose.model('user',schema);
+const user = mongoose.model('user', schema);
 module.exports = user;

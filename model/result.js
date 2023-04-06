@@ -21,41 +21,42 @@ mongoosePaginate.paginate.options = { customLabels: myCustomLabels };
 const Schema = mongoose.Schema;
 const schema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    },
+    exam: { type: String },
 
-    user:{ type:String },
+    answers: { type: Map },
 
-    exam:{ type:String },
-
-    answers:{ type:Map },
-
-    score:{
-      reading:{ type:String },
-      listening:{ type:String }
+    score: {
+      reading: { type: String },
+      listening: { type: String }
     },
 
-    isDeleted:{ type:Boolean },
+    isDeleted: { type: Boolean },
 
-    isActive:{ type:Boolean },
+    isActive: { type: Boolean },
 
-    createdAt:{ type:Date },
+    createdAt: { type: Date },
 
-    updatedAt:{ type:Date },
+    updatedAt: { type: Date },
 
-    addedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     },
 
-    updatedBy:{
-      type:Schema.Types.ObjectId,
-      ref:'user'
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   }
-  ,{ 
-    timestamps: { 
-      createdAt: 'createdAt', 
-      updatedAt: 'updatedAt' 
-    } 
+  , {
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    }
   }
 );
 schema.pre('save', async function (next) {
@@ -65,7 +66,7 @@ schema.pre('save', async function (next) {
 });
 
 schema.pre('insertMany', async function (next, docs) {
-  if (docs && docs.length){
+  if (docs && docs.length) {
     for (let index = 0; index < docs.length; index++) {
       const element = docs[index];
       element.isDeleted = false;
@@ -77,13 +78,13 @@ schema.pre('insertMany', async function (next, docs) {
 
 schema.method('toJSON', function () {
   const {
-    _id, __v, ...object 
-  } = this.toObject({ virtuals:true });
+    _id, __v, ...object
+  } = this.toObject({ virtuals: true });
   object.id = _id;
-     
+
   return object;
 });
 schema.plugin(mongoosePaginate);
 schema.plugin(idValidator);
-const result = mongoose.model('result',schema);
+const result = mongoose.model('result', schema);
 module.exports = result;

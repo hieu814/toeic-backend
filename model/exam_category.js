@@ -24,6 +24,8 @@ const schema = new Schema(
 
     name:{ type:String },
 
+    type: { type: Number },
+    
     image:{ type:String },
 
     description:{ type:String },
