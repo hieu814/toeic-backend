@@ -62,15 +62,7 @@ const schema = new Schema(
 
     label: { type: String ,default:""},
 
-    passages: [{
-      _id: false,
-
-      number: { type: Number },
-
-      content: { type: String ,default:""},
-
-      image: { type: String ,default:""},
-    }],
+    passage:{ type: String ,default:""},
 
     transcript: { type: String ,default:""},
 

@@ -111,8 +111,11 @@ const getExam = async (req,res) => {
       return res.validationError({ message : 'invalid objectId.' });
     }
     query._id = req.params.id;
-    let options = {};
+    let options = {
+      populate:"questions"
+    };
     let foundExam = await dbService.findOne(Exam,query, options);
+    console.log(foundExam);
     if (!foundExam){
       return res.recordNotFound();
     }

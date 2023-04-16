@@ -215,15 +215,14 @@ const logout = async (req, res) => {
 
 const firebaseLogin = async (req, res) => {
   try {
-    let roleAccess = false;
-    if (req.body.includeRoleAccess) {
-      roleAccess = req.body.includeRoleAccess;
-    }
-    console.log({roleAccess});
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (token) {
-      let result = await authService.loginWithAccessToken(authConstant.PLATFORM.DEVICE, token)
+      let roleAccess = false;
+      if (req.body.includeRoleAccess) {
+        roleAccess = req.body.includeRoleAccess;
+      }
+      let result = await authService.loginWithAccessToken(authConstant.PLATFORM.DEVICE, token, roleAccess)
       console.log({ result });
       if (result.flag) {
         return res.badRequest({ message: result.data });
