@@ -63,11 +63,12 @@ const schema = new Schema(
       ref: 'user'
     },
 
-    scoreStatistics: {
-      TotalListeningScore: { type: String },
-      TotalReadingScore: { type: String },
-      TestCount: { type: Number }
-    },
+    score_statistics: [{
+      _id: false,
+      type: { type: Number },
+      total_correct: { type: Number },
+      count: { type: Number }
+    }],
 
     userType: {
       type: Number,

@@ -54,7 +54,6 @@ const bulkInsertWord = async (req, res) => {
     }
     // console.log(dataToCreate);
     let createdWords = await dbService.createOrUpdate(Word, dataToCreate, { filter: "name" });
-    console.log("add ok ", createdWords.length);
     return res.success({
       data: createdWords || [],
       count: createdWords.length

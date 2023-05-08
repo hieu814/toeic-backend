@@ -6,6 +6,7 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 let idValidator = require('mongoose-id-validator');
+const { number } = require('joi');
 const myCustomLabels = {
   totalDocs: 'itemCount',
   docs: 'data',
@@ -25,15 +26,18 @@ const schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'user'
     },
-    exam: { type: String },
-
-    answers: { type: Map },
-
-    score: {
-      reading: { type: String },
-      listening: { type: String }
+    exam: {
+      type: Schema.Types.ObjectId,
+      ref: 'exam'
     },
 
+    answers: [{
+      _id: false,
+      type: { type: Number },
+      number: { type: Number },
+      answer: { type: String },
+      correct_answer: { type: String },
+    }],
     isDeleted: { type: Boolean },
 
     isActive: { type: Boolean },
