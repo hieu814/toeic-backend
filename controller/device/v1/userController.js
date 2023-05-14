@@ -22,25 +22,26 @@ const getLoggedInUserInfo = async (req, res) => {
   try {
     const query = {
       _id: req.user.id,
-      isDeleted: false 
+      // isDeleted: false
     };
-    query.isActive = true;
+    // query.isActive = true;
     let foundUser = await dbService.findOne(User, query);
+    console.log({ foundUser, query });
     if (!foundUser) {
       return res.recordNotFound();
     }
     return res.success({ data: foundUser });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-   
+
 /**
  * @description : create document of User in mongodb collection.
  * @param {Object} req : request including body for creating document.
  * @param {Object} res : response of created document
  * @return {Object} : created User. {status, message, data}
- */ 
+ */
 const addUser = async (req, res) => {
   try {
     let dataToCreate = { ...req.body || {} };
@@ -48,50 +49,50 @@ const addUser = async (req, res) => {
       dataToCreate,
       userSchemaKey.schemaKeys);
     if (!validateRequest.isValid) {
-      return res.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+      return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     dataToCreate.addedBy = req.user.id;
     dataToCreate = new User(dataToCreate);
-    let createdUser = await dbService.create(User,dataToCreate);
-    return res.success({ data : createdUser });
+    let createdUser = await dbService.create(User, dataToCreate);
+    return res.success({ data: createdUser });
   } catch (error) {
-    return res.internalServerError({ message:error.message }); 
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : create multiple documents of User in mongodb collection.
  * @param {Object} req : request including body for creating documents.
  * @param {Object} res : response of created documents.
  * @return {Object} : created Users. {status, message, data}
  */
-const bulkInsertUser = async (req,res)=>{
+const bulkInsertUser = async (req, res) => {
   try {
     if (req.body && (!Array.isArray(req.body.data) || req.body.data.length < 1)) {
       return res.badRequest();
     }
-    let dataToCreate = [ ...req.body.data ];
-    for (let i = 0;i < dataToCreate.length;i++){
+    let dataToCreate = [...req.body.data];
+    for (let i = 0; i < dataToCreate.length; i++) {
       dataToCreate[i] = {
         ...dataToCreate[i],
         addedBy: req.user.id
       };
     }
-    let createdUsers = await dbService.create(User,dataToCreate);
+    let createdUsers = await dbService.create(User, dataToCreate);
     createdUsers = { count: createdUsers ? createdUsers.length : 0 };
-    return res.success({ data:{ count:createdUsers.count || 0 } });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+    return res.success({ data: { count: createdUsers.count || 0 } });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : find all documents of User from collection based on query and options.
  * @param {Object} req : request including option and query. {query, options : {page, limit, pagination, populate}, isCountOnly}
  * @param {Object} res : response contains data found from collection.
  * @return {Object} : found User(s). {status, message, data}
  */
-const findAllUser = async (req,res) => {
+const findAllUser = async (req, res) => {
   try {
     let options = {};
     let query = {};
@@ -110,55 +111,55 @@ const findAllUser = async (req,res) => {
     if (req.body && req.body.query && req.body.query._id) {
       query._id.$in = [req.body.query._id];
     }
-    if (req.body.isCountOnly){
+    if (req.body.isCountOnly) {
       let totalRecords = await dbService.count(User, query);
       return res.success({ data: { totalRecords } });
     }
     if (req.body && typeof req.body.options === 'object' && req.body.options !== null) {
       options = { ...req.body.options };
     }
-    let foundUsers = await dbService.paginate( User,query,options);
-    if (!foundUsers || !foundUsers.data || !foundUsers.data.length){
-      return res.recordNotFound(); 
+    let foundUsers = await dbService.paginate(User, query, options);
+    if (!foundUsers || !foundUsers.data || !foundUsers.data.length) {
+      return res.recordNotFound();
     }
-    return res.success({ data :foundUsers });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+    return res.success({ data: foundUsers });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-        
+
 /**
  * @description : find document of User from table by id;
  * @param {Object} req : request including id in request params.
  * @param {Object} res : response contains document retrieved from table.
  * @return {Object} : found User. {status, message, data}
  */
-const getUser = async (req,res) => {
+const getUser = async (req, res) => {
   try {
     let query = {};
     if (!ObjectId.isValid(req.params.id)) {
-      return res.validationError({ message : 'invalid objectId.' });
+      return res.validationError({ message: 'invalid objectId.' });
     }
     query._id = req.params.id;
     let options = {};
-    let foundUser = await dbService.findOne(User,query, options);
-    if (!foundUser){
+    let foundUser = await dbService.findOne(User, query, options);
+    if (!foundUser) {
       return res.recordNotFound();
     }
-    return res.success({ data :foundUser });
+    return res.success({ data: foundUser });
   }
-  catch (error){
-    return res.internalServerError({ message:error.message });
+  catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : returns total number of documents of User.
  * @param {Object} req : request including where object to apply filters in req body 
  * @param {Object} res : response that returns total number of documents.
  * @return {Object} : number of documents. {status, message, data}
  */
-const getUserCount = async (req,res) => {
+const getUserCount = async (req, res) => {
   try {
     let where = {};
     let validateRequest = validation.validateFilterWithJoi(
@@ -171,45 +172,44 @@ const getUserCount = async (req,res) => {
     if (typeof req.body.where === 'object' && req.body.where !== null) {
       where = { ...req.body.where };
     }
-    let countedUser = await dbService.count(User,where);
-    return res.success({ data : { count: countedUser } });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+    let countedUser = await dbService.count(User, where);
+    return res.success({ data: { count: countedUser } });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : update document of User with data by id.
  * @param {Object} req : request including id in request params and data in request body.
  * @param {Object} res : response of updated User.
  * @return {Object} : updated User. {status, message, data}
  */
-const updateUser = async (req,res) => {
+const updateUser = async (req, res) => {
   try {
     let dataToUpdate = {
       ...req.body,
-      updatedBy:req.user.id,
+      updatedBy: req.user.id,
     };
     let validateRequest = validation.validateParamsWithJoi(
       dataToUpdate,
       userSchemaKey.updateSchemaKeys
     );
     if (!validateRequest.isValid) {
-      return res.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+      return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     const query = {
-      _id: {
-        $eq: req.params.id,
-        $ne: req.user.id
-      }
+      _id: req.params.id
     };
-    let updatedUser = await dbService.updateOne(User,query,dataToUpdate);
-    if (!updatedUser){
+
+    let updatedUser = await dbService.updateOne(User, query, dataToUpdate);
+    console.log({ query, updatedUser, dataToUpdate });
+    if (!updatedUser) {
       return res.recordNotFound();
     }
-    return res.success({ data :updatedUser });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+    return res.success({ data: updatedUser });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
 
@@ -219,49 +219,49 @@ const updateUser = async (req,res) => {
  * @param {Object} res : response of updated Users.
  * @return {Object} : updated Users. {status, message, data}
  */
-const bulkUpdateUser = async (req,res)=>{
+const bulkUpdateUser = async (req, res) => {
   try {
     let filter = req.body && req.body.filter ? { ...req.body.filter } : {};
     let dataToUpdate = {};
     delete dataToUpdate['addedBy'];
     if (req.body && typeof req.body.data === 'object' && req.body.data !== null) {
-      dataToUpdate = { 
+      dataToUpdate = {
         ...req.body.data,
-        updatedBy : req.user.id
+        updatedBy: req.user.id
       };
     }
-    let updatedUser = await dbService.updateMany(User,filter,dataToUpdate);
-    if (!updatedUser){
+    let updatedUser = await dbService.updateMany(User, filter, dataToUpdate);
+    if (!updatedUser) {
       return res.recordNotFound();
     }
-    return res.success({ data :{ count : updatedUser } });
-  } catch (error){
-    return res.internalServerError({ message:error.message }); 
+    return res.success({ data: { count: updatedUser } });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : partially update document of User with data by id;
  * @param {obj} req : request including id in request params and data in request body.
  * @param {obj} res : response of updated User.
  * @return {obj} : updated User. {status, message, data}
  */
-const partialUpdateUser = async (req,res) => {
+const partialUpdateUser = async (req, res) => {
   try {
-    if (!req.params.id){
-      res.badRequest({ message : 'Insufficient request parameters! id is required.' });
+    if (!req.params.id) {
+      res.badRequest({ message: 'Insufficient request parameters! id is required.' });
     }
     delete req.body['addedBy'];
     let dataToUpdate = {
       ...req.body,
-      updatedBy:req.user.id,
+      updatedBy: req.user.id,
     };
     let validateRequest = validation.validateParamsWithJoi(
       dataToUpdate,
       userSchemaKey.updateSchemaKeys
     );
     if (!validateRequest.isValid) {
-      return res.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+      return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     const query = {
       _id: {
@@ -273,12 +273,12 @@ const partialUpdateUser = async (req,res) => {
     if (!updatedUser) {
       return res.recordNotFound();
     }
-    return res.success({ data:updatedUser });
-  } catch (error){
-    return res.internalServerError({ message:error.message });
+    return res.success({ data: updatedUser });
+  } catch (error) {
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : change password
  * @param {Object} req : request including user credentials.
@@ -289,21 +289,21 @@ const changePassword = async (req, res) => {
   try {
     let params = req.body;
     if (!req.user.id || !params.newPassword || !params.oldPassword) {
-      return res.validationError({ message : 'Please Provide userId, new Password and Old password' });
+      return res.validationError({ message: 'Please Provide userId, new Password and Old password' });
     }
     let result = await auth.changePassword({
       ...params,
-      userId:req.user.id
+      userId: req.user.id
     });
-    if (result.flag){
-      return res.failure({ message :result.data });
+    if (result.flag) {
+      return res.failure({ message: result.data });
     }
-    return res.success({ message : result.data });
+    return res.success({ message: result.data });
   } catch (error) {
-    return res.internalServerError({ message:error.message });
+    return res.internalServerError({ message: error.message });
   }
 };
-    
+
 /**
  * @description : update user profile.
  * @param {Object} req : request including user profile details to update in request body.
@@ -318,25 +318,25 @@ const updateProfile = async (req, res) => {
       userSchemaKey.updateSchemaKeys
     );
     if (!validateRequest.isValid) {
-      return res.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+      return res.validationError({ message: `Invalid values in parameters, ${validateRequest.message}` });
     }
     delete data.password;
     delete data.createdAt;
     delete data.updatedAt;
     if (data.id) delete data.id;
-    let result = await dbService.updateOne(User,{ _id:req.user.id },data,{ new:true });
-    if (!result){
+    let result = await dbService.updateOne(User, { _id: req.user.id }, data, { new: true });
+    if (!result) {
       return res.recordNotFound();
-    }            
-    return res.success({ data :result });
-  } catch (error){
-    if (error.name === 'ValidationError'){
-      return res.validationError({ message : `Invalid Data, Validation Failed at ${ error.message}` });
     }
-    if (error.code && error.code === 11000){
-      return res.validationError({ message : 'Data duplication found.' });
+    return res.success({ data: result });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.validationError({ message: `Invalid Data, Validation Failed at ${error.message}` });
     }
-    return res.internalServerError({ message:error.message });
+    if (error.code && error.code === 11000) {
+      return res.validationError({ message: 'Data duplication found.' });
+    }
+    return res.internalServerError({ message: error.message });
   }
 };
 module.exports = {
@@ -350,5 +350,5 @@ module.exports = {
   bulkUpdateUser,
   partialUpdateUser,
   changePassword,
-  updateProfile    
+  updateProfile
 };

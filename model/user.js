@@ -64,7 +64,7 @@ const schema = new Schema(
     },
 
     score_statistics: [{
-      _id: false,
+      // _id: false,
       type: { type: Number },
       total_correct: { type: Number },
       count: { type: Number }
