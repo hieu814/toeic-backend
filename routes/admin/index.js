@@ -22,6 +22,7 @@ router.use(require('./projectRouteRoutes'));
 router.use(require('./routeRoleRoutes'));
 router.use(require('./userRoleRoutes'));
 router.use(require('./uploadRoutes'));
+router.use(require('./word_topicRoutes'));
 router.post('/test', (req, res) => {
     console.log(req.da);
 });
