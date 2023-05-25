@@ -18,5 +18,6 @@ router.use(require('./userRoutes'));
 router.use(require('./categoryRoutes'));
 router.use(require('./bannerRoutes'));
 router.use(require('./uploadRoutes'));
+router.use(require('./word_topicRoutes'));
 
 module.exports = router;
