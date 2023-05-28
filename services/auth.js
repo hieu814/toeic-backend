@@ -8,7 +8,7 @@ const dbService = require('../utils/dbService');
 const userTokens = require('../model/userTokens');
 const {
   JWT, LOGIN_ACCESS,
-  PLATFORM, MAX_LOGIN_RETRY_LIMIT, LOGIN_REACTIVE_TIME, FORGOT_PASSWORD_WITH
+  PLATFORM, MAX_LOGIN_RETRY_LIMIT, LOGIN_REACTIVE_TIME, FORGOT_PASSWORD_WITH, USER_TYPES
 } = require('../constants/authConstant');
 const jwt = require('jsonwebtoken');
 const common = require('../utils/common');
@@ -191,17 +191,21 @@ const loginWithAccessToken = async (platform, idtoken, roleAccess) => {
   try {
     const decodedToken = await admin.auth().verifyIdToken(idtoken);
     const userRecord = await admin.auth().getUser(decodedToken.uid);
+    console.log({userRecord});
     const _user = {
-      id: userRecord.uid,
+      // id: userRecord.uid,
       email: userRecord.email,
       isActive: userRecord.disabled == false,
-      // userType: USER_TYPES.User
+      userType: USER_TYPES.Client,
       name: userRecord.displayName,
-      avatar: userRecord.photoURL
-    };
-    let user = await dbService.updateOne(User, { 'email': userRecord.email }, _user, { upsert: true });
+      avatar: userRecord.photoURL ?? "",
 
-    // console.log({ registerUser: user });
+    };
+    var user = await dbService.findOne(User, { 'email': userRecord.email });
+    if (!user) {
+      user = await dbService.create(User, _user);
+    }
+    console.log({user});
     if (user) {
       if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT) {
         let now = dayjs();

@@ -288,7 +288,7 @@ const partialUpdateUser = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     let params = req.body;
-    if (!req.user.id || !params.newPassword || !params.oldPassword) {
+    if (!req.user.id || !params.newPassword) {
       return res.validationError({ message: 'Please Provide userId, new Password and Old password' });
     }
     let result = await auth.changePassword({

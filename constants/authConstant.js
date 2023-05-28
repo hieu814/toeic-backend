@@ -4,30 +4,32 @@
  */
 
 const JWT = {
-  ADMIN_SECRET:'myjwtadminsecret',
-  DEVICE_SECRET:'myjwtdevicesecret',
-  CLIENT_SECRET:'myjwtclientsecret',
+  ADMIN_SECRET: 'myjwtadminsecret',
+  DEVICE_SECRET: 'myjwtdevicesecret',
+  CLIENT_SECRET: 'myjwtclientsecret',
   EXPIRES_IN: 10000
 };
 
 const USER_TYPES = {
-  User:1,
-  Admin:2,
+  User: 1,
+  Admin: 2,
+  Client: 3
 };
 
 const PLATFORM = {
-  ADMIN:1,
-  DEVICE:2,
-  CLIENT:3,
+  ADMIN: 1,
+  DEVICE: 2,
+  CLIENT: 3,
 };
 
 let LOGIN_ACCESS = {
-  [USER_TYPES.Admin]:[PLATFORM.ADMIN],        
-  [USER_TYPES.User]:[PLATFORM.DEVICE,PLATFORM.CLIENT],        
+  [USER_TYPES.Admin]: [PLATFORM.ADMIN],
+  [USER_TYPES.User]: [PLATFORM.DEVICE, PLATFORM.CLIENT],
+  [USER_TYPES.Client]: [PLATFORM.DEVICE, PLATFORM.CLIENT],
 };
 
 const MAX_LOGIN_RETRY_LIMIT = 3;
-const LOGIN_REACTIVE_TIME = 2;   
+const LOGIN_REACTIVE_TIME = 2;
 
 const FORGOT_PASSWORD_WITH = {
   LINK: {
