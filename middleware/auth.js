@@ -29,7 +29,7 @@ const verifyCallback = (req, resolve, reject, platform) => async (error, user, i
     token: (req.headers.authorization).replace('Bearer ', ''),
     userId: user.id
   });
-  console.log({userToken});
+  // console.log({userToken});
   if (!userToken) {
     return reject('Token not found');
   }

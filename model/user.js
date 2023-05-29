@@ -26,9 +26,6 @@ mongoosePaginate.paginate.options = { customLabels: myCustomLabels };
 const Schema = mongoose.Schema;
 const schema = new Schema(
   {
-
-    username: { type: String },
-
     password: { type: String },
 
     email: { type: String },
