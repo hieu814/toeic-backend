@@ -60,6 +60,16 @@ const createOrUpdate = (model, data, query) => new Promise((resolve, reject) => 
       reject(err);
     });
 });
+const getRandom = (model, query) => new Promise((resolve, reject) => {
+  model.aggregate(query, (error, result) => {
+    if (error) {
+      console.log(error);
+      reject(error);
+    } else {
+      resolve(result);
+    }
+  });
+});
 // for create or update
 const createWithUpsert = (model, data, query) => new Promise((resolve, reject) => {
 
@@ -166,5 +176,6 @@ module.exports = {
   paginate,
   createWithUpsert,
   createOrUpdate,
-  createUniqe
+  createUniqe,
+  getRandom
 };

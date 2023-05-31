@@ -80,7 +80,9 @@ const findAllGroup_question = async (req, res) => {
       group_questionSchemaKey.findFilterKeys,
       Group_question.schema.obj
     );
-    if (!validateRequest.isValid) {
+    console.log({ query: req.body });
+    if (!validateRequest.isValid && !req.body.random) {
+      console.log("invalid message");
       return res.validationError({ message: `${validateRequest.message}` });
     }
     if (typeof req.body.query === 'object' && req.body.query !== null) {
@@ -98,11 +100,21 @@ const findAllGroup_question = async (req, res) => {
     if (req.body && typeof req.body.options === 'object' && req.body.options !== null) {
       options = { ...req.body.options };
     }
-    let foundGroup_questions = await dbService.paginate(Group_question, query, options);
-    if (!foundGroup_questions || !foundGroup_questions.data || !foundGroup_questions.data.length) {
-      return res.recordNotFound();
+
+    if (req.body.random) {
+      console.log({ query: req.body });
+      let foundGroup_questions = await dbService.getRandom(Group_question, req.body.query)
+      console.log({ query: req.body, foundGroup_questions });
+      return res.success({ data: foundGroup_questions ?? [] });
+    } else {
+      let foundGroup_questions = await dbService.paginate(Group_question, query, options);
+      if (!foundGroup_questions || !foundGroup_questions.data || !foundGroup_questions.data.length) {
+        return res.recordNotFound();
+      }
+      return res.success({ data: foundGroup_questions });
     }
-    return res.success({ data: foundGroup_questions });
+
+
   } catch (error) {
     return res.internalServerError({ message: error.message });
   }

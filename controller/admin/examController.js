@@ -19,7 +19,7 @@ const utils = require('../../utils/common');
 const addExam = async (req, res) => {
   try {
     let dataToCreate = { ...req.body || {} };
-    console.log(dataToCreate);
+    // console.log(dataToCreate);
     let validateRequest = validation.validateParamsWithJoi(
       dataToCreate,
       examSchemaKey.schemaKeys);

@@ -205,7 +205,7 @@ const loginWithAccessToken = async (platform, idtoken, roleAccess) => {
     if (!user) {
       user = await dbService.create(User, _user);
     }
-    console.log({user});
+
     if (user) {
       if (user.loginRetryLimit >= MAX_LOGIN_RETRY_LIMIT) {
         let now = dayjs();
