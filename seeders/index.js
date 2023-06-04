@@ -23,7 +23,7 @@ async function seedUser() {
       'username': 'User',
       'email': 'hieuvm811@gmail.com',
       'isActive': true,
-      'userType': authConstant.USER_TYPES.User
+      'userType': authConstant.USER_TYPES.Moderator
     };
     userToBeInserted.password = await bcrypt.hash(userToBeInserted.password, 8);
     let user = await dbService.updateOne(User, { 'username': 'User' }, userToBeInserted, { upsert: true });
@@ -4360,7 +4360,7 @@ async function seedUserRole() {
             userId: user.id,
             roleId: defaultRoles.find((d) => d.code === 'ADMIN').id
           });
-        } else if (user.userType === authConstant.USER_TYPES.User) {
+        } else if (user.userType === authConstant.USER_TYPES.Moderator) {
           userRolesArr.push({
             userId: user.id,
             roleId: defaultRoles.find((d) => d.code === 'USER').id

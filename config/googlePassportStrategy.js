@@ -29,7 +29,7 @@ const googlePassportStrategy = passport => {
         'ssoAuth': { 'googleId': profile.id },
         'email': profile.emails !== undefined ? profile.emails[0].value : '',
         'password':'',
-        'userType':USER_TYPES.User
+        'userType':USER_TYPES.Moderator
       };
       let found = await dbService.findOne(User,{ 'email': userObj.email });
       if (found) {

@@ -196,7 +196,7 @@ const loginWithAccessToken = async (platform, idtoken, roleAccess) => {
       // id: userRecord.uid,
       email: userRecord.email,
       isActive: userRecord.disabled == false,
-      userType: USER_TYPES.Client,
+      userType: USER_TYPES.User,
       name: userRecord.displayName,
       avatar: userRecord.photoURL ?? "",
 

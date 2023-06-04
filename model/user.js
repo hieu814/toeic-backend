@@ -71,7 +71,7 @@ const schema = new Schema(
       type: Number,
       enum: convertObjectToEnum(USER_TYPES),
       required: true,
-      default: USER_TYPES.User
+      default: USER_TYPES.Moderator
     },
     resetPasswordLink: {
       code: String,

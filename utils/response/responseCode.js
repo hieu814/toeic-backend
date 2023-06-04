@@ -4,4 +4,5 @@ module.exports = {
   internalServerError: 500,
   unAuthorized: 401,
   validationError: 422,
+  forbidden: 403,
 };

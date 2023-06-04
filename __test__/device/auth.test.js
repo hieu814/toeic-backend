@@ -108,7 +108,7 @@ describe('POST /register -> if email and username is given', () => {
           'TotalReadingScore':'Avon',
           'TestCount':462
         },
-        'userType':authConstant.USER_TYPES.User,
+        'userType':authConstant.USER_TYPES.Moderator,
         'gender':'Bigender',
         'phone':'(335) 758-7134',
         'intro':'Dollar',

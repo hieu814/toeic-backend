@@ -33,6 +33,9 @@ const responseHandler = (req, res, next) => {
   res.unAuthorized = (data = {}) => {
     res.status(responseCode.unAuthorized).json(responseBody.unAuthorized(data));
   };
+  res.forbidden = (data = {}) => {
+    res.status(403).json({ message: 'Forbidden', data });
+  };
   next();
 };
 

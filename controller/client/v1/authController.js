@@ -35,7 +35,7 @@ const register = async (req,res) =>{
     }
     const data = new User({
       ...req.body,
-      userType: authConstant.USER_TYPES.User
+      userType: authConstant.USER_TYPES.Moderator
     });
 
     let checkUniqueFields = await common.checkUniqueFieldsInDatabase(User,[ 'username', 'email' ],data,'REGISTER');

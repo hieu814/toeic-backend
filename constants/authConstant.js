@@ -11,9 +11,9 @@ const JWT = {
 };
 
 const USER_TYPES = {
-  User: 1,
+  Moderator: 1,
   Admin: 2,
-  Client: 3
+  User: 3
 };
 
 const PLATFORM = {
@@ -24,8 +24,8 @@ const PLATFORM = {
 
 let LOGIN_ACCESS = {
   [USER_TYPES.Admin]: [PLATFORM.ADMIN, PLATFORM.DEVICE,],
+  [USER_TYPES.Moderator]: [PLATFORM.DEVICE, PLATFORM.CLIENT,PLATFORM.ADMIN],
   [USER_TYPES.User]: [PLATFORM.DEVICE, PLATFORM.CLIENT],
-  [USER_TYPES.Client]: [PLATFORM.DEVICE, PLATFORM.CLIENT],
 };
 
 const MAX_LOGIN_RETRY_LIMIT = 3;
