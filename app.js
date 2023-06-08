@@ -37,7 +37,7 @@ app.use(require('./utils/response/responseHandler'));
 //all routes 
 const routes = require('./routes');
 
-app.use(require('./middleware/activityLog').addActivityLog);
+// app.use(require('./middleware/activityLog').addActivityLog);
 
 adminPassportStrategy(passport);
 devicePassportStrategy(passport);

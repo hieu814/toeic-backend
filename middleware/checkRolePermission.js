@@ -28,7 +28,13 @@ const checkRolePermission = async (req, res, next) => {
     || routeName.includes("delete")
     || routeName.includes("update")
   )) {
-    return res.forbidden();
+    if (req.user.userType === USER_TYPES.User && !routeName.includes("admin")
+    ) {
+      next();
+    } else {
+      return res.forbidden();
+    }
+
   } else {
     next();
   }
