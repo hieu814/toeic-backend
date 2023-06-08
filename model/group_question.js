@@ -6,6 +6,7 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 let idValidator = require('mongoose-id-validator');
+const { boolean } = require('joi');
 const myCustomLabels = {
   totalDocs: 'itemCount',
   docs: 'data',
@@ -48,27 +49,29 @@ const schema = new Schema(
     questions: [{
       _id: false,
       number: { type: Number },
-      question: { type: String ,default:""},
-      A: { type: String ,default:""},
-      B: { type: String ,default:""},
-      C: { type: String ,default:""},
-      D: { type: String ,default:""},
-      correct_answer: { type: String ,default:""}
+      question: { type: String, default: "" },
+      A: { type: String, default: "" },
+      B: { type: String, default: "" },
+      C: { type: String, default: "" },
+      D: { type: String, default: "" },
+      correct_answer: { type: String, default: "" }
     }],
 
     type: { type: Number },
 
-    group: { type: String ,default:""},
+    random: { type: Boolean, default: false },
 
-    label: { type: String ,default:""},
+    group: { type: String, default: "" },
 
-    passage:{ type: String ,default:""},
+    label: { type: String, default: "" },
 
-    transcript: { type: String ,default:""},
+    passage: { type: String, default: "" },
 
-    image: { type: String ,default:""},
+    transcript: { type: String, default: "" },
 
-    audio: { type: String ,default:""}
+    image: { type: String, default: "" },
+
+    audio: { type: String, default: "" }
   }
   , {
     timestamps: {

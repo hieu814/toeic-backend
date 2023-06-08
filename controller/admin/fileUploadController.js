@@ -7,7 +7,16 @@ const fs = require('fs');
 const path = require('path');
 const formidable = require('formidable');
 const validUrl = require('valid-url');
+const { v4: uuidv4 } = require('uuid');
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
+const s3Client = new S3Client({
+  region: process.env.S3_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 let defaultDirectory = 'public/assets';
 let allowedFileTypes = [
   'png',
@@ -55,7 +64,6 @@ const upload = async (req, res) => {
     const uploadFileRes = await new Promise(async (resolve, reject) => {
 
       form.parse(req, async function (error, fields, files) {
-        console.log("files ", files);
         if (files?.file) {
           files = {
             files: [
@@ -88,7 +96,6 @@ const upload = async (req, res) => {
 
 
           let response = await uploadFiles(file, fields, fileCount++);
-          console.log(response);
           if (response.status == false) {
             uploadFailed.push({
               'name': file.originalFilename,
@@ -108,6 +115,8 @@ const upload = async (req, res) => {
             });
           }
         }
+
+console.log(uploadSuccess)
         resolve({
           uploadSuccess,
           uploadFailed
@@ -117,21 +126,18 @@ const upload = async (req, res) => {
 
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      console.log("upload ok ", uploadFileRes);
       return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      console.log("upload  ", message);
       return res.failure({
         message: message,
         data: uploadFileRes
       });
     }
   } catch (error) {
-    console.log("upload error ", error);
     if (error.name && error.name == 'validationError') {
 
       return res.validationError({ message: error.message });
@@ -141,12 +147,65 @@ const upload = async (req, res) => {
   }
 };
 
+const uploadFiles = async (file, fields, fileCount) => {
+  // Convert PersistentFile to buffer
+  const fileBuffer = fs.readFileSync(file.filepath);
+  const timestamp = Date.now();
+  const randomString = uuidv4().replace(/-/g, '');
+  const originalFilename = file.originalFilename;
+  const fileExtension = originalFilename.split('.').pop();
+  const newFilename = `${fileCount}_${timestamp}_${randomString}.${fileExtension}`;
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: `path/to/uploaded/files/${newFilename}`,
+    Body: fileBuffer,
+    ACL: "public-read", // Modify the ACL (Access Control List) as per your requirements
+  };
+
+  try {
+    await s3Client.send(new PutObjectCommand(params));
+    return {
+      status: true,
+      data: `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${params.Key}`,
+    };
+  } catch (error) {
+    return {
+      status: false,
+      message: error.message,
+    };
+  }
+};
+
+
+/**
+ * @description : create directory to aws bucket
+ * @param {string} directoryPath : location where directory will be created
+ */
+
+const makeDirectory = async (directoryName) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: directoryName + "/",
+  };
+
+  try {
+    await s3Client.send(new PutObjectCommand(params));
+  } catch (err) {
+    if (err.name === "NotFound") {
+      await s3Client.send(new PutObjectCommand(params));
+    } else {
+      throw err;
+    }
+  }
+};
+
+
 /**
  * @description : create directory to specified path
  * @param {string} directoryPath : location where directory will be created
  * @return {boolean} : returns true if directory is created or false
  */
-const makeDirectory = async (directoryPath) => {
+const makeDirectoryLocal = async (directoryPath) => {
 
   if (!fs.existsSync(directoryPath)) {
     fs.promises.mkdir(directoryPath, { recursive: true }, (error) => {
@@ -166,12 +225,12 @@ const makeDirectory = async (directoryPath) => {
  * @param {number} fileCount : total number of files to upload
  * @return {Object} : response for file upload
  */
-const uploadFiles = async (file, fields, fileCount) => {
+const uploadFilesLocal = async (file, fields, fileCount) => {
 
   let tempPath = file?.filepath;
   let unlink;
   let fileName = file?.originalFilename;
-  console.log(file);
+
   let extension = path.extname(file?.originalFilename);
   extension = extension.split('.').pop();
 
