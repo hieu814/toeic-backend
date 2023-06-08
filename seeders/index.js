@@ -20,24 +20,24 @@ async function seedUser() {
     userToBeInserted = {
       'password': 'User@1234',
       'isDeleted': false,
-      'username': 'User',
+      'name': 'User',
       'email': 'hieuvm811@gmail.com',
       'isActive': true,
       'userType': authConstant.USER_TYPES.Moderator
     };
     userToBeInserted.password = await bcrypt.hash(userToBeInserted.password, 8);
-    let user = await dbService.updateOne(User, { 'username': 'User' }, userToBeInserted, { upsert: true });
+    await dbService.updateOne(User, { 'email': 'hieuvm811@gmail.com', }, userToBeInserted, { upsert: true });
     userToBeInserted = {
 
       'password': 'Admin@1234',
       'isDeleted': false,
-      'username': 'Admin',
+      'name': 'Admin',
       'email': 'hieuvu8118@gmail.com',
       'isActive': true,
       'userType': authConstant.USER_TYPES.Admin
     };
     userToBeInserted.password = await bcrypt.hash(userToBeInserted.password, 8);
-    let admin = await dbService.updateOne(User, { 'username': 'Admin' }, userToBeInserted, { upsert: true });
+    await dbService.updateOne(User, { 'email': 'hieuvu8118@gmail.com', }, userToBeInserted, { upsert: true });
     console.info('Users seeded 🍺');
   } catch (error) {
     console.log('User seeder failed due to ', error.message);
@@ -46,7 +46,7 @@ async function seedUser() {
 /* seeds roles */
 async function seedRole() {
   try {
-    const roles = ['Admin','System_User'];
+    const roles = ['Admin', 'System_User'];
     const insertedRoles = await dbService.findMany(Role, { code: { '$in': roles.map(role => role.toUpperCase()) } });
     const rolesToInsert = [];
     roles.forEach(role => {
