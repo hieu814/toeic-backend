@@ -7,6 +7,7 @@
     "test": "jest --runInBand --verbose --detectOpenHandles"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.350.0",
     "aws-sdk": "~2.1008.0",
     "axios": "~0.21.1",
     "bcrypt": "5.0.0",
@@ -22,6 +23,7 @@
     "extract-zip": "~2.0.1",
     "firebase-admin": "^11.5.0",
     "formidable": "~2.0.1",
+    "google-translate": "^3.0.0",
     "handlebars": "^4.7.7",
     "joi": "~17.3.0",
     "jsonwebtoken": "~8.5.1",
